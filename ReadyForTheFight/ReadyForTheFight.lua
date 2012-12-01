@@ -158,7 +158,6 @@ local function updatezoneinfo ()
 		subzone = tempsubzone;
 	end
 	dbg("SubZone: ".. subzone);
-	if (
 end
 
 function events:PLAYER_ENTERING_WORLD(...)

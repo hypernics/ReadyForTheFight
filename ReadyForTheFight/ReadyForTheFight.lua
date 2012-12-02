@@ -87,13 +87,17 @@ RftF_Bosses_location = {
 		["Wind Lord Mel'jarak"] = {
 			["subzone"]	=	"Staging Balcony",
 			["id"] = 4,
+			["needkilledid"] = 3,
 		},
 		["Amber-Shaper Un'sok"] = {
 			["subzone"]	=	"Amber Research Sanctum",
 			["id"] = 5,
 		},
 		["Grand Empress Shek'zeer"] = {
-			["subzone"]	=	"Heart of Fear",
+			["coordX"] = 0.289,
+			["coordY"] = 0.738,
+			["dist"] = 0.06,
+			["maplevel"] = 2,
 			["id"] = 6,
 		},
 	},
@@ -102,12 +106,14 @@ RftF_Bosses_location = {
 			["coordX"] = 0.785,
 			["coordY"] = 0.487,
 			["dist"] = 0.1,
+			["maplevel"] = 0,
 			["id"] = 1,
 		},
 		["Tsulong"] = {
 			["coordX"] = 0.785,
 			["coordY"] = 0.487,
 			["dist"] = 0.1,
+			["maplevel"] = 0,
 			["id"] = 2,
 			["needkilledid"] = 1,
 		},
@@ -115,12 +121,14 @@ RftF_Bosses_location = {
 			["coordX"] = 0.588,
 			["coordY"] = 0.487,
 			["dist"] = 0.07,
+			["maplevel"] = 0,
 			["id"] = 3,
 		},
 		["Sha of Fear"] = {
 			["coordX"] = 0.39,
 			["coordY"] = 0.487,
 			["dist"] = 0.1,
+			["maplevel"] = 0,
 			["id"] = 4,
 		},
 	}
@@ -240,7 +248,7 @@ function updatezoneinfo ()
 						if (RftF_Bosses_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinátája
 							SetMapToCurrentZone();
 							local posX, posY = GetPlayerMapPosition("player");
-							if ((math.abs(RftF_Bosses_location[zonename][k]["coordX"]-posX) <= RftF_Bosses_location[zonename][k]["dist"]) and (math.abs(RftF_Bosses_location[zonename][k]["coordY"]-posY) <= RftF_Bosses_location[zonename][k]["dist"])) then
+							if ((math.abs(RftF_Bosses_location[zonename][k]["coordX"]-posX) <= RftF_Bosses_location[zonename][k]["dist"]) and (math.abs(RftF_Bosses_location[zonename][k]["coordY"]-posY) <= RftF_Bosses_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == RftF_Bosses_location[zonename][k]["maplevel"])) then
 								dbg("Boss in distance: ".. k);
 								bossfound = k; 
 							end
@@ -314,6 +322,7 @@ function events:WORLD_MAP_UPDATE(...)
 end
 
 function events:ACTIVE_TALENT_GROUP_CHANGED(...)
+	dbg("Event: ACTIVE_TALENT_GROUP_CHANGED"); 
 	updatezoneinfo();
 end
 

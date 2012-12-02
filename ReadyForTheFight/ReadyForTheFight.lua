@@ -108,7 +108,7 @@ RftF_Bosses_location = {
 
 local frame, events = CreateFrame("Frame"), {};
 
-local update_need = false; -- ha true, akkor változott a helyszín és újraellenõrzés szükséges (combat esetén fordulhat elõ)
+local update_need = false; -- ha true, akkor vï¿½ltozott a helyszï¿½n ï¿½s ï¿½jraellenï¿½rzï¿½s szï¿½ksï¿½ges (combat esetï¿½n fordulhat elï¿½)
 
 local function dbg (msg)
 	if (debugmode) then
@@ -120,12 +120,9 @@ local function HaveGlyph(glyph)
 	for i = 1, NUM_GLYPH_SLOTS do
 		local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
-			local link = GetGlyphLink(i);
-			if ( link ~= "") then
-				local glyphname = select(1, strsplit("]", select(2, strsplit("[",select(2, strsplit(":", link)))))) ;
-				if (glyphname == glyph) then
-					return true;
-				end
+			local glyphname = GetSpellInfo( glyphSpellID );
+			if (glyphname == glyph) then
+				return true;
 			end
 		end
 	end
@@ -178,7 +175,7 @@ function events:PLAYER_TARGET_CHANGED(...)
 end
 
 local function updatezoneinfo ()
-	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenõrzés
+	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenï¿½rzï¿½s
 		zonename = GetRealZoneText();
 		if (zonename ~= nil) then
 			dbg("RealZone: ".. zonename);
@@ -190,8 +187,8 @@ local function updatezoneinfo ()
 		if (subzone ~= nil) then
 			dbg("SubZone: ".. subzone);
 		end
-		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zónainfo
-			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zóna szerepel a configban és a boss helyszínek között is
+		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zï¿½nainfo
+			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zï¿½na szerepel a configban ï¿½s a boss helyszï¿½nek kï¿½zï¿½tt is
 				bossfound = nil;
 				for k,v in pairs(RftF_Bosses_location[zonename]) do
 					if (subzone == RftF_Bosses_location[zonename][k]["Place"]) then -- megvan a boss neve
@@ -207,7 +204,7 @@ local function updatezoneinfo ()
 				end
 			end	
 		end
-	else -- combat van, ellenõrzés elhalasztva a combat után
+	else -- combat van, ellenï¿½rzï¿½s elhalasztva a combat utï¿½n
 		update_need = true;
 	end
 end
@@ -225,7 +222,7 @@ function events:ZONE_CHANGED_NEW_AREA(...)
 	updatezoneinfo();
 end
 function events:PLAYER_REGEN_ENABLED(...)
-	if (update_need) then -- ha combatba volt zona váltás, akkor combat után frissítünk
+	if (update_need) then -- ha combatba volt zona vï¿½ltï¿½s, akkor combat utï¿½n frissï¿½tï¿½nk
 		dbg("Update: PLAYER_REGEN_ENABLED");
 		updatezoneinfo();
 	end

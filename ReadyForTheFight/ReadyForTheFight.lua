@@ -15,6 +15,20 @@ RftFDB = {
 			},
 		},
 	},
+	["Terrace of Endless Spring"] = {
+		["Tsulong"] = {
+			["Protection"] = {
+				["glyph"] = {
+					["Blessed Life"] = 1,
+					["Glyph of the Alabaster Shield"] = 1,
+				},
+				["talent"] = {
+					["Holy Prism"] = 1,
+					["Light's Hammer"] = 1,
+				},
+			},
+		},
+	},
 	["Ide kerul a zona"] = {
 		["Ide kerul a boss neve"] = {
 			["Ide kerul a talent spec neve"] = {
@@ -33,59 +47,82 @@ RftFDB = {
 RftF_Bosses_location = {
 	["Mogu'shan Vaults"] = {
 		["The Stone Guard"] = {
-			["Place"]	=	"The Golden Hall",
+			["subzone"]	=	"The Golden Hall",
 			["id"] = 1,
 		},
 		["Feng the Accursed"] = {
-			["Place"]	=	"Dais of Conquerors",
+			["subzone"]	=	"Dais of Conquerors",
 			["id"] = 2,
 		},
 		["Gara'jal the Spiritbinder"] = {
-			["Place"]	=	"Emperor's Reach",
+			["subzone"]	=	"Emperor's Reach",
 			["id"] = 3,
 		},
 		["The Spirit Kings"]	= {
-			["Place"]	=	"The Repository",
+			["subzone"]	=	"The Repository",
 			["id"] = 4,
 		},
 		["Elegon"]	= {
-			["Place"]	=	"Engine of Nalak'sha",
+			["subzone"]	=	"Engine of Nalak'sha",
 			["id"] = 5,
 		},
 		["Will of the Emperor"]	= {
-			["Place"]	=	"Forge of the Endless",
+			["subzone"]	=	"Forge of the Endless",
 			["id"] = 6,
 		}
 	},
 	["Heart of Fear"]	= {
 		["Imperial Vizier Zor'lok"] = {
-			["Place"]	=	"Oratorium of the Voice",
+			["subzone"]	=	"Oratorium of the Voice",
 			["id"] = 1,
 		},
 		["Blade Lord Ta'yak"] = {
-			["Place"]	=	"Training Quarters",
+			["subzone"]	=	"Training Quarters",
 			["id"] = 2,
 		},
 		["Garalon"] = {
-			["Place"]	=	"Dread Terrace",
+			["subzone"]	=	"Dread Terrace",
 			["id"] = 3,
 		},
 		["Wind Lord Mel'jarak"] = {
-			["Place"]	=	"Staging Balcony",
+			["subzone"]	=	"Staging Balcony",
 			["id"] = 4,
 		},
 		["Amber-Shaper Un'sok"] = {
-			["Place"]	=	"Amber Research Sanctum",
+			["subzone"]	=	"Amber Research Sanctum",
 			["id"] = 5,
 		},
 		["Grand Empress Shek'zeer"] = {
-			["Place"]	=	"Heart of Fear",
+			["subzone"]	=	"Heart of Fear",
 			["id"] = 6,
 		},
-
 	},
 	["Terrace of Endless Spring"] = {
-	
+		["Protectors of the Endless"] = {
+			["coordX"] = 0.785,
+			["coordY"] = 0.487,
+			["dist"] = 0.1,
+			["id"] = 1,
+		},
+		["Tsulong"] = {
+			["coordX"] = 0.785,
+			["coordY"] = 0.487,
+			["dist"] = 0.1,
+			["id"] = 2,
+			["needkilledid"] = 1,
+		},
+		["Lei Shi"] = {
+			["coordX"] = 0.588,
+			["coordY"] = 0.487,
+			["dist"] = 0.07,
+			["id"] = 3,
+		},
+		["Sha of Fear"] = {
+			["coordX"] = 0.39,
+			["coordY"] = 0.487,
+			["dist"] = 0.1,
+			["id"] = 4,
+		},
 	}
 }
 
@@ -104,7 +141,8 @@ RftF_Bosses_location = {
 
 
 
-
+local thisaddonname="ReadyForTheFight";
+local coordupdateregistered = false;
 
 local frame, events = CreateFrame("Frame"), {};
 
@@ -145,46 +183,40 @@ local function HaveTalent(talent)
 	return false; 
 end
 
-function events:PLAYER_TARGET_CHANGED(...)
-	if(UnitExists("target")) then
---		if (UnitIsEnemy("player","target")) then
-			if (not UnitIsDead("target")) then
-				local zone = select(1, GetInstanceInfo());
-				local target = GetUnitName("target");
-				if (RftFDB[zone][target]) then
+local function CheckTheBoss()
+	if ((zonename ~= nil) and (bossfound)) then
+				if (RftFDB[zonename][bossfound]) then
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
 						local spec = select(2, GetSpecializationInfo(GetSpecialization(false, false, GetActiveSpecGroup())));
-						if (RftFDB[zone][target][spec]) then
-							if (RftFDB[zone][target][spec]["glyph"]) then
-								for k,v in pairs(RftFDB[zone][target][spec]["glyph"]) do
+						if (RftFDB[zonename][bossfound][spec]) then
+							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
+								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
 									if (not HaveGlyph(k)) then
-										dbg("Missing glyph: "..k);
+										print("Missing glyph: "..k);
 									end
 								end
 							end
-							if (RftFDB[zone][target][spec]["talent"]) then
-								for k,v in pairs(RftFDB[zone][target][spec]["talent"]) do
+							if (RftFDB[zonename][bossfound][spec]["talent"]) then
+								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
 									if (not HaveTalent(k)) then
-										dbg("Missing talent: "..k);
+										print("Missing talent: "..k);
 									end									
 								end
 							end
 						end
 					end				
 				end
-			end
---		end
 	end
 end
 
-local function updatezoneinfo ()
+function updatezoneinfo ()
 	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenõrzés
 		zonename = GetRealZoneText();
 		if (zonename ~= nil) then
 			dbg("RealZone: ".. zonename);
 		end
 		subzone = GetSubZoneText();
-		if (subzone == "") then
+		if ((subzone == "") or (subzone ~= nil)) then
 			subzone = zonename;
 		end
 		if (subzone ~= nil) then
@@ -192,19 +224,55 @@ local function updatezoneinfo ()
 		end
 		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zónainfo
 			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zóna szerepel a configban és a boss helyszínek között is
+				if (not coordupdateregistered) then
+--					coordupdateregistered = true;
+--					frame:RegisterEvent("WORLD_MAP_UPDATE");
+				end
 				bossfound = nil;
 				for k,v in pairs(RftF_Bosses_location[zonename]) do
-					if (subzone == RftF_Bosses_location[zonename][k]["Place"]) then -- megvan a boss neve
-						bossfound = k;
-						dbg("Boss in this zone: ".. bossfound);
-						bossalive = select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][k]["id"]));
+					if (RftF_Bosses_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
+						if (subzone == RftF_Bosses_location[zonename][k]["subzone"]) then -- megvan a boss neve
+							bossfound = k;
+							dbg("Boss in this zone: ".. bossfound);
+						end
+					else -- nincs subzone
+						if (RftF_Bosses_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinátája
+							SetMapToCurrentZone();
+							local posX, posY = GetPlayerMapPosition("player");
+							if ((math.abs(RftF_Bosses_location[zonename][k]["coordX"]-posX) <= RftF_Bosses_location[zonename][k]["dist"]) and (math.abs(RftF_Bosses_location[zonename][k]["coordY"]-posY) <= RftF_Bosses_location[zonename][k]["dist"])) then
+								dbg("Boss in distance: ".. k);
+								bossfound = k; 
+							end
+						end
+					end
+					if (bossfound) then
+						if (RftF_Bosses_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e másik bosst leölni ehhez a bosshoz
+							if (select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][k]["needkilledid"]))) then
+								bossfound = nil;
+								dbg("Boss is not active!");
+							end
+						end
+					end
+					if (bossfound) then
+						bossalive= true;
+						if (RftF_Bosses_location[zonename][bossfound]["id"]) then
+							bossalive = select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][bossfound]["id"]));
+						end
 						if (bossalive) then
 							dbg("Boss is alive!");
 						else
 							dbg("Boss killed!");
 						end
+							CheckTheBoss();
+						break;
 					end
 				end
+			else
+				if (coordupdateregistered) then
+					frame:UnRegisterEvent("WORLD_MAP_UPDATE");
+					coordupdateregistered = false;
+				end
+
 			end	
 		end
 	else -- combat van, ellenõrzés elhalasztva a combat után
@@ -224,6 +292,12 @@ function events:ZONE_CHANGED_NEW_AREA(...)
 	dbg("Event: ZONE_CHANGED_NEW_AREA"); 
 	updatezoneinfo();
 end
+function events:ADDON_LOADED(arg1,...)
+	if (arg1==thisaddonname) then
+		dbg("Event: ADDON_LOADED"); 
+		updatezoneinfo();
+	end
+end
 function events:PLAYER_REGEN_ENABLED(...)
 	if (update_need) then -- ha combatba volt zona váltás, akkor combat után frissítünk
 		dbg("Update: PLAYER_REGEN_ENABLED");
@@ -234,6 +308,9 @@ function events:PLAYER_REGEN_DISABLED(...)
 	dbg("Event: PLAYER_REGEN_DISABLED"); 
 end
 
+function events:WORLD_MAP_UPDATE(...)
+	updatezoneinfo();
+end
 
 frame:SetScript("OnEvent", function(self, event, ...)
 	events[event](self, ...); -- call one of the functions above
@@ -244,4 +321,5 @@ frame:RegisterEvent("ZONE_CHANGED_INDOORS");
 frame:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 frame:RegisterEvent("PLAYER_REGEN_DISABLED");
 frame:RegisterEvent("PLAYER_REGEN_ENABLED");
+frame:RegisterEvent("ADDON_LOADED");
 

@@ -16,7 +16,7 @@ RftFDB = {
 		},
 	},
 	["Terrace of Endless Spring"] = {
-		["Tsulong"] = {
+		["Protectors of the Endless"] = {
 			["Protection"] = {
 				["glyph"] = {
 					["Blessed Life"] = 1,
@@ -143,6 +143,7 @@ RftF_Bosses_location = {
 
 local thisaddonname="ReadyForTheFight";
 local coordupdateregistered = false;
+local bossfound,zonename = nil;
 
 local frame, events = CreateFrame("Frame"), {};
 
@@ -184,7 +185,7 @@ local function HaveTalent(talent)
 end
 
 local function CheckTheBoss()
-	if ((zonename ~= nil) and (bossfound)) then
+	if ((zonename ~= nil) and (bossfound ~= nil)) then
 				if (RftFDB[zonename][bossfound]) then
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
 						local spec = select(2, GetSpecializationInfo(GetSpecialization(false, false, GetActiveSpecGroup())));
@@ -216,7 +217,7 @@ function updatezoneinfo ()
 			dbg("RealZone: ".. zonename);
 		end
 		subzone = GetSubZoneText();
-		if ((subzone == "") or (subzone ~= nil)) then
+		if ((subzone == "") or (subzone == nil)) then
 			subzone = zonename;
 		end
 		if (subzone ~= nil) then
@@ -264,7 +265,7 @@ function updatezoneinfo ()
 							dbg("Boss killed!");
 						end
 							CheckTheBoss();
-						break;
+							break;
 					end
 				end
 			else
@@ -312,6 +313,10 @@ function events:WORLD_MAP_UPDATE(...)
 	updatezoneinfo();
 end
 
+function events:ACTIVE_TALENT_GROUP_CHANGED(...)
+	updatezoneinfo();
+end
+
 frame:SetScript("OnEvent", function(self, event, ...)
 	events[event](self, ...); -- call one of the functions above
 end);
@@ -322,4 +327,5 @@ frame:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 frame:RegisterEvent("PLAYER_REGEN_DISABLED");
 frame:RegisterEvent("PLAYER_REGEN_ENABLED");
 frame:RegisterEvent("ADDON_LOADED");
+frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 

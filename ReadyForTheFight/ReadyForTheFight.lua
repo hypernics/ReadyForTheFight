@@ -33,42 +33,54 @@ RftFDB = {
 RftF_Bosses_location = {
 	["Mogu'shan Vaults"] = {
 		["The Stone Guard"] = {
-			["Place"]	=	"The Golden Hall"
+			["Place"]	=	"The Golden Hall",
+			["id"] = 1,
 		},
 		["Feng the Accursed"] = {
-			["Place"]	=	"Dais of Conquerors"
+			["Place"]	=	"Dais of Conquerors",
+			["id"] = 2,
 		},
 		["Gara'jal the Spiritbinder"] = {
-			["Place"]	=	"Emperor's Reach"
+			["Place"]	=	"Emperor's Reach",
+			["id"] = 3,
 		},
 		["The Spirit Kings"]	= {
-			["Place"]	=	"The Repository"
+			["Place"]	=	"The Repository",
+			["id"] = 4,
 		},
 		["Elegon"]	= {
-			["Place"]	=	"Engine of Nalak'sha"
+			["Place"]	=	"Engine of Nalak'sha",
+			["id"] = 5,
 		},
 		["Will of the Emperor"]	= {
-			["Place"]	=	"Forge of the Endless"
+			["Place"]	=	"Forge of the Endless",
+			["id"] = 6,
 		}
 	},
 	["Heart of Fear"]	= {
 		["Imperial Vizier Zor'lok"] = {
-			["Place"]	=	"Oratorium of the Voice"
+			["Place"]	=	"Oratorium of the Voice",
+			["id"] = 1,
 		},
 		["Blade Lord Ta'yak"] = {
-			["Place"]	=	"Training Quarters"
+			["Place"]	=	"Training Quarters",
+			["id"] = 2,
 		},
 		["Garalon"] = {
-			["Place"]	=	"Dread Terrace"
+			["Place"]	=	"Dread Terrace",
+			["id"] = 3,
 		},
 		["Wind Lord Mel'jarak"] = {
-			["Place"]	=	"Staging Balcony"
+			["Place"]	=	"Staging Balcony",
+			["id"] = 4,
 		},
 		["Amber-Shaper Un'sok"] = {
-			["Place"]	=	"Amber Research Sanctum"
+			["Place"]	=	"Amber Research Sanctum",
+			["id"] = 5,
 		},
 		["Grand Empress Shek'zeer"] = {
-			["Place"]	=	"Heart of Fear"
+			["Place"]	=	"Heart of Fear",
+			["id"] = 6,
 		},
 
 	},
@@ -167,17 +179,34 @@ end
 
 local function updatezoneinfo ()
 	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenõrzés
-	zonename = GetRealZoneText();
-	if (zonename ~= nil) then
-		dbg("RealZone: ".. zonename);
-	end
-	local subzone = GetSubZoneText();
-	if (tempsubzone ~= "") then
-		subzone = zonename;
-	end
-	if (subzone ~= nil) then
-		dbg("SubZone: ".. subzone);
-	end
+		zonename = GetRealZoneText();
+		if (zonename ~= nil) then
+			dbg("RealZone: ".. zonename);
+		end
+		subzone = GetSubZoneText();
+		if (subzone == "") then
+			subzone = zonename;
+		end
+		if (subzone ~= nil) then
+			dbg("SubZone: ".. subzone);
+		end
+		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zónainfo
+			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zóna szerepel a configban és a boss helyszínek között is
+				bossfound = nil;
+				for k,v in pairs(RftF_Bosses_location[zonename]) do
+					if (subzone == RftF_Bosses_location[zonename][k]["Place"]) then -- megvan a boss neve
+						bossfound = k;
+						dbg("Boss in this zone: ".. bossfound);
+						bossalive = select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][k]["id"]));
+						if (bossalive) then
+							dbg("Boss is alive!");
+						else
+							dbg("Boss killed!");
+						end
+					end
+				end
+			end	
+		end
 	else -- combat van, ellenõrzés elhalasztva a combat után
 		update_need = true;
 	end
@@ -196,7 +225,7 @@ function events:ZONE_CHANGED_NEW_AREA(...)
 	updatezoneinfo();
 end
 function events:PLAYER_REGEN_ENABLED(...)
-	if (update_need) then
+	if (update_need) then -- ha combatba volt zona váltás, akkor combat után frissítünk
 		dbg("Update: PLAYER_REGEN_ENABLED");
 		updatezoneinfo();
 	end

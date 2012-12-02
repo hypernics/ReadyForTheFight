@@ -1,8 +1,8 @@
 local debugmode = true;
 
 RftFDB = {
-	["Kalimdor"] = {
-		["Auctioneer Sowata"] = {
+	["Heart of Fear"] = {
+		["Imperial Vizier Zor'lok"] = {
 			["Protection"] = {
 				["glyph"] = {
 					["Blessed Life"] = 1,
@@ -55,6 +55,21 @@ RftF_Bosses_location = {
 		["Imperial Vizier Zor'lok"] = {
 			["Place"]	=	"Oratorium of the Voice"
 		},
+		["Blade Lord Ta'yak"] = {
+			["Place"]	=	"Training Quarters"
+		},
+		["Garalon"] = {
+			["Place"]	=	"Dread Terrace"
+		},
+		["Wind Lord Mel'jarak"] = {
+			["Place"]	=	"Staging Balcony"
+		},
+		["Amber-Shaper Un'sok"] = {
+			["Place"]	=	"Amber Research Sanctum"
+		},
+		["Grand Empress Shek'zeer"] = {
+			["Place"]	=	"Heart of Fear"
+		},
 
 	},
 	["Terrace of Endless Spring"] = {
@@ -81,6 +96,8 @@ RftF_Bosses_location = {
 
 local frame, events = CreateFrame("Frame"), {};
 
+local update_need = false; -- ha true, akkor változott a helyszín és újraellenõrzés szükséges (combat esetén fordulhat elõ)
+
 local function dbg (msg)
 	if (debugmode) then
 		print (msg);
@@ -91,7 +108,7 @@ local function HaveGlyph(glyph)
 	for i = 1, NUM_GLYPH_SLOTS do
 		local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
-			local link = GetGlyphLink(i);-- Retrieves the Glyph's link ("" if no glyph in Socket);
+			local link = GetGlyphLink(i);
 			if ( link ~= "") then
 				local glyphname = select(1, strsplit("]", select(2, strsplit("[",select(2, strsplit(":", link)))))) ;
 				if (glyphname == glyph) then
@@ -149,21 +166,23 @@ function events:PLAYER_TARGET_CHANGED(...)
 end
 
 local function updatezoneinfo ()
-	zone = select(1, GetInstanceInfo());
-	dbg("InstanceName: ".. zone);
+	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenõrzés
 	zonename = GetRealZoneText();
-	dbg("RealZone: ".. zonename);
-	local tempsubzone = GetSubZoneText();
-	if (tempsubzone ~= "") then
-		subzone = tempsubzone;
+	if (zonename ~= nil) then
+		dbg("RealZone: ".. zonename);
 	end
-	dbg("SubZone: ".. subzone);
+	local subzone = GetSubZoneText();
+	if (tempsubzone ~= "") then
+		subzone = zonename;
+	end
+	if (subzone ~= nil) then
+		dbg("SubZone: ".. subzone);
+	end
+	else -- combat van, ellenõrzés elhalasztva a combat után
+		update_need = true;
+	end
 end
 
-function events:PLAYER_ENTERING_WORLD(...)
-	dbg("Event: PLAYER_ENTERING_WORLD"); 
-	updatezoneinfo();
-end
 function events:ZONE_CHANGED(...)
 	dbg("Event: ZONE_CHANGED"); 
 	updatezoneinfo();
@@ -177,7 +196,10 @@ function events:ZONE_CHANGED_NEW_AREA(...)
 	updatezoneinfo();
 end
 function events:PLAYER_REGEN_ENABLED(...)
-	dbg("Event: PLAYER_REGEN_ENABLED"); 
+	if (update_need) then
+		dbg("Update: PLAYER_REGEN_ENABLED");
+		updatezoneinfo();
+	end
 end
 function events:PLAYER_REGEN_DISABLED(...)
 	dbg("Event: PLAYER_REGEN_DISABLED"); 
@@ -188,7 +210,6 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	events[event](self, ...); -- call one of the functions above
 end);
 
-frame:RegisterEvent("PLAYER_ENTERING_WORLD");
 frame:RegisterEvent("ZONE_CHANGED");
 frame:RegisterEvent("ZONE_CHANGED_INDOORS");
 frame:RegisterEvent("ZONE_CHANGED_NEW_AREA");

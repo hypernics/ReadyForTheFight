@@ -325,7 +325,6 @@ function events:ADDON_LOADED(arg1,...)
 			end
 		end
 		SLASH_ReadyForTheFight1 = "/rftf"
-		ReadyForTheFight:CreateConfig();
 		
 		updatezoneinfo();
 	end
@@ -348,11 +347,15 @@ function events:ACTIVE_TALENT_GROUP_CHANGED(...)
 	dbg("Event: ACTIVE_TALENT_GROUP_CHANGED"); 
 	updatezoneinfo();
 end
+function events:PLAYER_ENTERING_WORLD()
+	ReadyForTheFight:CreateConfig();
+end
 
 frame:SetScript("OnEvent", function(self, event, ...)
 	events[event](self, ...); -- call one of the functions above
 end);
 
+frame:RegisterEvent("PLAYER_ENTERING_WORLD");
 frame:RegisterEvent("ZONE_CHANGED");
 frame:RegisterEvent("ZONE_CHANGED_INDOORS");
 frame:RegisterEvent("ZONE_CHANGED_NEW_AREA");

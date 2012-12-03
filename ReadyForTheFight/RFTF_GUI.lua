@@ -1,32 +1,26 @@
 local L = ReadyForTheFight.Locals
 
-function ReadyForTheFight:CreateDropDownMenu(text, parent, itemList, width)
-	local name = parent:GetName() .. text
+function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
+	local name = parent:GetName() .. name;
     local menu = CreateFrame("Frame", name, parent, "UIDropDownMenuTemplate");
     menu.displayMode = "MENU"
-
+	menu.name = name;
+	
 	local frame = _G[menu:GetName() .. 'Text']
 	frame:SetText(text)
 	frame:SetTextColor(1, 1, 1, 1)
 	frame:SetFontObject(GameFontNormal)
 
+	menu.info = {}
+	menu.frame = frame;
+		
     menu:EnableMouse(true);
     if(width) then
         _G.UIDropDownMenu_SetWidth(menu, width);
     end
     menu.itemList = itemList or {};
-    menu.init = function()
-            for i=1, #menu.itemList do
-                local info = _G.UIDropDownMenu_CreateInfo();
-                for k,v in pairs(menu.itemList[i]) do
-                    info[k] = v;
-                end
-                _G.UIDropDownMenu_AddButton(info, _G.UIDROPDOWNMENU_MENU_LEVEL);
-            end
-        end
     menu:SetScript("OnShow", function(self)
-            _G.UIDropDownMenu_Initialize(self, self.init);
-            ReadyForTheFight:ConstructMenu(self);
+            _G.UIDropDownMenu_Initialize(self, ReadyForTheFight.BossSelect_Initialize);
         end);
     menu.SetValue = function(self, value)
             _G.UIDropDownMenu_SetSelectedValue(self, value);
@@ -35,14 +29,57 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, itemList, width)
     return menu;
 end
 
-function ReadyForTheFight:ConstructMenu(menu)
-	
-	for k,v in pairs(ReadyForTheFight.Boss_location) do
-		local info = _G.UIDropDownMenu_CreateInfo();
-		info.text = k;
-		info.notCheckable = true;
-		info.hasArrow = true;
-		_G.UIDropDownMenu_AddButton(info, 1);
+function ReadyForTheFight:BossSelect_Initialize(level)
+	local info = self.info;
+	local _;
+	wipe(info);
+
+	if level == 1 or not level then
+		if (self.name == "RFTFConfigPanelbosses") then
+			for k, v in pairs(ReadyForTheFight.Boss_location) do
+				info.text = k;
+				info.checked = nil;
+				info.hasArrow = true;
+				info.notCheckable = true;
+				info.value = {
+					["instance"] = k
+				}
+				UIDropDownMenu_AddButton(info, level);
+			end
+		else
+			for i=1, GetNumSpecializations() do
+				_, info.text = GetSpecializationInfo(i);
+				info.checked = nil;
+				info.hasArrow = false;
+				info.notCheckable = false;
+				info.value = {
+					["specialization"] = info.text
+				}
+				info.func = function(item)
+					item.checked=true;
+					print(item.value.specialization);
+					self:SetValue(item.value);
+				end;
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	elseif level == 2 then
+		local instance = UIDROPDOWNMENU_MENU_VALUE["instance"];
+		for k, v in pairs(ReadyForTheFight.Boss_location[instance]) do
+			info.text = k;
+			info.notCheckable = true;
+			info.checked = nil;
+			info.hasArrow = false;
+			info.value = {
+				["instance"] = instance,
+				["boss"] = k
+			}
+			info.func = function(item)
+				ToggleDropDownMenu(nil, nil, self);
+				self:SetValue(item.value);
+			end;
+			UIDropDownMenu_AddButton(info, level);
+		end
 	end
 end
 
@@ -97,16 +134,18 @@ function ReadyForTheFight:CreateConfig()
 
 	InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
 	
-	local bossSelect = ReadyForTheFight:CreateDropDownMenu("Select a boss", ReadyForTheFight.configPanel, {}, 160 );
+	local bossSelect = ReadyForTheFight:CreateDropDownMenu("Select a boss", ReadyForTheFight.configPanel, 160, "bosses" );
 	bossSelect:SetPoint('TOPLEFT', 10, -10);
 
-	local specSelect = ReadyForTheFight:CreateDropDownMenu("Select specialiyation", ReadyForTheFight.configPanel, {}, 160 );
+	ReadyForTheFight.bossSelect = bossSelect;
+
+	local specSelect = ReadyForTheFight:CreateDropDownMenu("Select specialization", ReadyForTheFight.configPanel, 160, "specs" );
 	specSelect:SetPoint('TOPLEFT', 210, -10);
 	
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);
 		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, RftFDB, name, false);
-		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -40 -(math.floor((i-1)/3)*30 ) );
+		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -40 -(math.floor((i-1)/3)*26 ) );
 	end
 
 	j = 0;
@@ -115,7 +154,7 @@ function ReadyForTheFight:CreateConfig()
 		if (glyphId) then
 			j = j + 1;
 			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, RftFDB, name, false);
-			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -240 -(math.floor((j-1)/3)*30 ) );
+			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -230 -(math.floor((j-1)/3)*26 ) );
 		end
 	end
 

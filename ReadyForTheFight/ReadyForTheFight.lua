@@ -1,5 +1,9 @@
 local debugmode = true;
 
+ReadyForTheFight = {Locals = {}}
+
+local L = ReadyForTheFight.Locals
+
 RftFDB = {
 	["Heart of Fear"] = {
 		["Imperial Vizier Zor'lok"] = {
@@ -304,6 +308,15 @@ end
 function events:ADDON_LOADED(arg1,...)
 	if (arg1==thisaddonname) then
 		dbg("Event: ADDON_LOADED"); 
+		
+		if not RFTFDB then 
+			RFTFDB = {} -- üres config
+		end
+
+		SlashCmdList["ReadyForTheFight"] = ReadyForTheFight.Options;
+		SLASH_ReadyForTheFight1 = "/rftf"
+		ReadyForTheFight:CreateConfig();
+		
 		updatezoneinfo();
 	end
 end

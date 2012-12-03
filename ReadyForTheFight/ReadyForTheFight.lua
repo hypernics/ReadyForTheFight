@@ -164,11 +164,12 @@ local function dbg (msg)
 end
 
 local function HaveGlyph(glyph) 
+	local i, _, enabled, glyphSpellID;
+	
 	for i = 1, NUM_GLYPH_SLOTS do
-		local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i);
+		enabled, _, _, glyphSpellID = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
-			local glyphname = GetSpellInfo( glyphSpellID );
-			if (glyphname == glyph) then
+			if (glyph == GetSpellInfo( glyphSpellID ) ) then
 				return true;
 			end
 		end
@@ -177,9 +178,11 @@ local function HaveGlyph(glyph)
 end
 
 local function HaveTalent(talent)
+	local i, _, name, selected;
+	
 	local activeTalentGroup = GetActiveSpecGroup() or 1;
 	for i=1, GetNumTalents() do
-		local name, iconTexture, tier, column, selected, available = GetTalentInfo(i,false,activeTalentGroup);
+		name, _, _, _, selected = GetTalentInfo(i,false,activeTalentGroup);
 		if selected then
 			if (name == talent) then
 				return true;

@@ -23,6 +23,16 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
             _G.UIDropDownMenu_Initialize(self, ReadyForTheFight.BossSelect_Initialize);
         end);
     menu.SetValue = function(self, value)
+    		if (value.boss) then
+    			print(value.boss);
+				local info = self.info;
+				info.text = value.boss;
+				info.value = value;
+				info.checked = true;
+				info.hasArrow = false;
+				info.notCheckable = false;
+				_G.UIDropDownMenu_AddButton(info, 1);
+			end;
             _G.UIDropDownMenu_SetSelectedValue(self, value);
         end;
     menu:Hide(); menu:Show();

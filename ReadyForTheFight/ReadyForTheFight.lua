@@ -310,10 +310,13 @@ function events:ADDON_LOADED(arg1,...)
 		dbg("Event: ADDON_LOADED"); 
 		
 		if not RFTFDB then 
-			RFTFDB = {} -- üres config
+			RFTFDB = {} -- ures config
 		end
 
-		SlashCmdList["ReadyForTheFight"] = ReadyForTheFight.Options;
+		SlashCmdList["ReadyForTheFight"] = function ()
+			ReadyForTheFight.Options()
+			frame:Show()
+		end
 		SLASH_ReadyForTheFight1 = "/rftf"
 		ReadyForTheFight:CreateConfig();
 		
@@ -360,7 +363,19 @@ frame:SetScript("OnMouseDown", function(self, button)
    self.isMoving = true;
   end
 end)
+frame:SetScript("OnEnter", function()
+	GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4)
+	GameTooltip:ClearLines()
+	GameTooltip:AddLine("Hello")
+	GameTooltip:Show()
+end) 
+frame:SetScript("OnLeave", function()
+	GameTooltip:Hide() 
+end) 
 frame:SetScript("OnMouseUp", function(self, button)
+  if IsControlKeyDown() and button == "LeftButton" then
+	frame:Hide()
+  end
   if button == "RightButton" and self.isMoving then
    self:StopMovingOrSizing();
    self.isMoving = false;
@@ -379,3 +394,4 @@ frame:SetHeight(64);
 frame:SetNormalTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
 frame:SetPushedTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
 frame:SetHighlightTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+frame:Hide()

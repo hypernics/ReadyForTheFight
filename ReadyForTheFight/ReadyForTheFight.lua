@@ -238,8 +238,8 @@ function updatezoneinfo ()
 		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zonainfo
 			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
 				if (not coordupdateregistered) then
---					coordupdateregistered = true;
---					frame:RegisterEvent("WORLD_MAP_UPDATE");
+					coordupdateregistered = true;
+					frame:RegisterEvent("WORLD_MAP_UPDATE");
 				end
 				bossfound = nil;
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
@@ -313,9 +313,16 @@ function events:ADDON_LOADED(arg1,...)
 			RFTFDB = {} -- ures config
 		end
 
-		SlashCmdList["ReadyForTheFight"] = function ()
-			ReadyForTheFight.Options()
-			frame:Show()
+		SlashCmdList["ReadyForTheFight"] = function (msg)
+			if (msg == "test") then
+				if frame:IsVisible() then
+					frame:Hide()
+				else
+					frame:Show()
+				end
+			else
+				ReadyForTheFight.Options()
+			end
 		end
 		SLASH_ReadyForTheFight1 = "/rftf"
 		ReadyForTheFight:CreateConfig();
@@ -373,9 +380,6 @@ frame:SetScript("OnLeave", function()
 	GameTooltip:Hide() 
 end) 
 frame:SetScript("OnMouseUp", function(self, button)
-  if IsControlKeyDown() and button == "LeftButton" then
-	frame:Hide()
-  end
   if button == "RightButton" and self.isMoving then
    self:StopMovingOrSizing();
    self.isMoving = false;
@@ -387,7 +391,6 @@ frame:SetScript("OnHide", function(self)
    self.isMoving = false;
   end
 end)
--- The code below makes the frame visible, and is not necessary to enable dragging.
 frame:SetPoint("CENTER"); 
 frame:SetWidth(64); 
 frame:SetHeight(64);

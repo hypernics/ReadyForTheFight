@@ -3,7 +3,8 @@
 ## Notes: Glyph, talent check for bosses
 ## Author: hypernics
 ## Version: 0.2
-## SavedVariables: RFTFDB
+## SavedVariables: 
+## SavedVariablesPerCharacter: RftFDB
 
 ReadyForTheFight.lua
 RFTF_GUI.lua

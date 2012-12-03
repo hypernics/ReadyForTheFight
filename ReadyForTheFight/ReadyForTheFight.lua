@@ -48,7 +48,7 @@ RftFDB = {
 }
 
 
-RftF_Bosses_location = {
+ReadyForTheFight.Boss_location = {
 	["Mogu'shan Vaults"] = {
 		["The Stone Guard"] = {
 			["subzone"]	=	"The Golden Hall",
@@ -236,31 +236,31 @@ function updatezoneinfo ()
 			dbg("SubZone: ".. subzone);
 		end
 		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zonainfo
-			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
+			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
 				if (not coordupdateregistered) then
 --					coordupdateregistered = true;
 --					frame:RegisterEvent("WORLD_MAP_UPDATE");
 				end
 				bossfound = nil;
-				for k,v in pairs(RftF_Bosses_location[zonename]) do
-					if (RftF_Bosses_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
-						if (subzone == RftF_Bosses_location[zonename][k]["subzone"]) then -- megvan a boss neve
+				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
+					if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
+						if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
 							bossfound = k;
 							dbg("Boss in this zone: ".. bossfound);
 						end
 					else -- nincs subzone
-						if (RftF_Bosses_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
+						if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
 							SetMapToCurrentZone();
 							local posX, posY = GetPlayerMapPosition("player");
-							if ((math.abs(RftF_Bosses_location[zonename][k]["coordX"]-posX) <= RftF_Bosses_location[zonename][k]["dist"]) and (math.abs(RftF_Bosses_location[zonename][k]["coordY"]-posY) <= RftF_Bosses_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == RftF_Bosses_location[zonename][k]["maplevel"])) then
+							if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
 								dbg("Boss in distance: ".. k);
 								bossfound = k; 
 							end
 						end
 					end
 					if (bossfound) then
-						if (RftF_Bosses_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
-							if (select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][k]["needkilledid"]))) then
+						if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
+							if (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"]))) then
 								bossfound = nil;
 								dbg("Boss is not active!");
 							end
@@ -268,8 +268,8 @@ function updatezoneinfo ()
 					end
 					if (bossfound) then
 						bossalive= true;
-						if (RftF_Bosses_location[zonename][bossfound]["id"]) then
-							bossalive = select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][bossfound]["id"]));
+						if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
+							bossalive = select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"]));
 						end
 						if (bossalive) then
 							dbg("Boss is alive!");

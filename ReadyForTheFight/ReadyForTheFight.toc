@@ -1,7 +1,7 @@
 ## Interface: 50100
 ## Title: Ready For The Fight
 ## Notes: Glyph, talent check for bosses
-## Author: LittleBoy
-## Version: 0.1
+## Author: hypernics
+## Version: 0.2
 
 ReadyForTheFight.lua

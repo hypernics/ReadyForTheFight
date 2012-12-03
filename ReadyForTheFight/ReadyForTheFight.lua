@@ -155,7 +155,7 @@ local bossfound,zonename = nil;
 
 local frame, events = CreateFrame("Frame"), {};
 
-local update_need = false; -- ha true, akkor változott a helyszín és újraellenõrzés szükséges (combat esetén fordulhat elõ)
+local update_need = false; -- ha true, akkor valtozott a helyszin es ujraellenorzes szukseges (combat eseten fordulhat elo)
 
 local function dbg (msg)
 	if (debugmode) then
@@ -167,12 +167,9 @@ local function HaveGlyph(glyph)
 	for i = 1, NUM_GLYPH_SLOTS do
 		local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
-			local link = GetGlyphLink(i);
-			if ( link ~= "") then
-				local glyphname = select(1, strsplit("]", select(2, strsplit("[",select(2, strsplit(":", link)))))) ;
-				if (glyphname == glyph) then
-					return true;
-				end
+			local glyphname = GetSpellInfo( glyphSpellID );
+			if (glyphname == glyph) then
+				return true;
 			end
 		end
 	end
@@ -219,7 +216,7 @@ local function CheckTheBoss()
 end
 
 function updatezoneinfo ()
-	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenõrzés
+	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenorzes
 		zonename = GetRealZoneText();
 		if (zonename ~= nil) then
 			dbg("RealZone: ".. zonename);
@@ -231,8 +228,8 @@ function updatezoneinfo ()
 		if (subzone ~= nil) then
 			dbg("SubZone: ".. subzone);
 		end
-		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zónainfo
-			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zóna szerepel a configban és a boss helyszínek között is
+		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zonainfo
+			if (RftFDB[zonename] and RftF_Bosses_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
 				if (not coordupdateregistered) then
 --					coordupdateregistered = true;
 --					frame:RegisterEvent("WORLD_MAP_UPDATE");
@@ -245,7 +242,7 @@ function updatezoneinfo ()
 							dbg("Boss in this zone: ".. bossfound);
 						end
 					else -- nincs subzone
-						if (RftF_Bosses_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinátája
+						if (RftF_Bosses_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
 							SetMapToCurrentZone();
 							local posX, posY = GetPlayerMapPosition("player");
 							if ((math.abs(RftF_Bosses_location[zonename][k]["coordX"]-posX) <= RftF_Bosses_location[zonename][k]["dist"]) and (math.abs(RftF_Bosses_location[zonename][k]["coordY"]-posY) <= RftF_Bosses_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == RftF_Bosses_location[zonename][k]["maplevel"])) then
@@ -255,7 +252,7 @@ function updatezoneinfo ()
 						end
 					end
 					if (bossfound) then
-						if (RftF_Bosses_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e másik bosst leölni ehhez a bosshoz
+						if (RftF_Bosses_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
 							if (select(3, GetInstanceLockTimeRemainingEncounter(RftF_Bosses_location[zonename][k]["needkilledid"]))) then
 								bossfound = nil;
 								dbg("Boss is not active!");
@@ -284,7 +281,7 @@ function updatezoneinfo ()
 
 			end	
 		end
-	else -- combat van, ellenõrzés elhalasztva a combat után
+	else -- combat van, ellenorzes elhalasztva a combat utan
 		update_need = true;
 	end
 end
@@ -308,7 +305,7 @@ function events:ADDON_LOADED(arg1,...)
 	end
 end
 function events:PLAYER_REGEN_ENABLED(...)
-	if (update_need) then -- ha combatba volt zona váltás, akkor combat után frissítünk
+	if (update_need) then -- ha combatba volt zona valtas, akkor combat utan frissitunk
 		dbg("Update: PLAYER_REGEN_ENABLED");
 		updatezoneinfo();
 	end

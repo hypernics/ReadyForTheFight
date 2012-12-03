@@ -1,5 +1,8 @@
 local L = ReadyForTheFight.Locals
 
+ReadyForTheFight.spec = "";
+ReadyForTheFight.boss = "";
+
 function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
 	local name = parent:GetName() .. name;
     local menu = CreateFrame("Frame", name, parent, "UIDropDownMenuTemplate");
@@ -24,7 +27,6 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
         end);
     menu.SetValue = function(self, value)
     		if (value.boss) then
-    			print(value.boss);
 				local info = self.info;
 				info.text = value.boss;
 				info.value = value;
@@ -32,7 +34,16 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
 				info.hasArrow = false;
 				info.notCheckable = false;
 				_G.UIDropDownMenu_AddButton(info, 1);
+				
+				ReadyForTheFight.boss = value.boss;
+				
+				ReadyForTheFight:LoadChecklist(ReadyForTheFight.boss, ReadyForTheFight.spec);
 			end;
+			if (value.specialization) then
+				ReadyForTheFight.spec = value.specialization;
+
+				ReadyForTheFight:LoadChecklist(ReadyForTheFight.boss, ReadyForTheFight.spec);
+			end
             _G.UIDropDownMenu_SetSelectedValue(self, value);
         end;
     menu:Hide(); menu:Show();
@@ -67,7 +78,6 @@ function ReadyForTheFight:BossSelect_Initialize(level)
 				}
 				info.func = function(item)
 					item.checked=true;
-					print(item.value.specialization);
 					self:SetValue(item.value);
 				end;
 				UIDropDownMenu_AddButton(info, level);
@@ -91,6 +101,11 @@ function ReadyForTheFight:BossSelect_Initialize(level)
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
+end
+
+function ReadyForTheFight:LoadChecklist(boss, spec)
+
+	print ("Display config for " .. boss .. ", " .. spec);
 end
 
 function ReadyForTheFight:CreateCheckButton(name, parent, table, field, radio)

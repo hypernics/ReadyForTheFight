@@ -157,7 +157,7 @@ local thisaddonname="ReadyForTheFight";
 local coordupdateregistered = false;
 local bossfound,zonename = nil;
 
-local frame, events = CreateFrame("Frame"), {};
+local frame, events = CreateFrame("Button", "RftFFrame", UIParent), {};
 
 local update_need = false; -- ha true, akkor valtozott a helyszin es ujraellenorzes szukseges (combat eseten fordulhat elo)
 
@@ -351,3 +351,31 @@ frame:RegisterEvent("PLAYER_REGEN_ENABLED");
 frame:RegisterEvent("ADDON_LOADED");
 frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 
+frame:SetMovable(true)
+frame:EnableMouse(true)
+frame:SetClampedToScreen(true)
+frame:SetScript("OnMouseDown", function(self, button)
+  if IsShiftKeyDown() and button == "RightButton" and not self.isMoving then
+   self:StartMoving();
+   self.isMoving = true;
+  end
+end)
+frame:SetScript("OnMouseUp", function(self, button)
+  if button == "RightButton" and self.isMoving then
+   self:StopMovingOrSizing();
+   self.isMoving = false;
+  end
+end)
+frame:SetScript("OnHide", function(self)
+  if ( self.isMoving ) then
+   self:StopMovingOrSizing();
+   self.isMoving = false;
+  end
+end)
+-- The code below makes the frame visible, and is not necessary to enable dragging.
+frame:SetPoint("CENTER"); 
+frame:SetWidth(64); 
+frame:SetHeight(64);
+frame:SetNormalTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+frame:SetPushedTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+frame:SetHighlightTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")

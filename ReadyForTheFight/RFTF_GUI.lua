@@ -31,14 +31,15 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
         end);
     menu.SetValue = function(self, value)
     		if (value) and (value.boss) then
-				local info = self.info;
-				info.text = value.boss;
-				info.value = value;
-				info.checked = true;
-				info.hasArrow = false;
-				info.notCheckable = false;
-				_G.UIDropDownMenu_AddButton(info, 1);
-				
+    			if (value.boss ~= "Default") then
+					local info = self.info;
+					info.text = value.boss;
+					info.value = value;
+					info.checked = true;
+					info.hasArrow = false;
+					info.notCheckable = false;
+					_G.UIDropDownMenu_AddButton(info, 1);
+				end				
 				ReadyForTheFight.boss = value.boss;
 				ReadyForTheFight.instance = value.instance;
 				
@@ -63,9 +64,9 @@ function ReadyForTheFight:BossSelect_Initialize(level)
 	if level == 1 or not level then
 		if (self.name == "RFTFConfigPanelbosses") then
 			info.text = "Default";
-			info.checked = (ReadyForTheFight.boss == "");
+			info.checked = (ReadyForTheFight.boss == "Default");
 			info.hasArrow = false;
-			info.notCheckable = true;
+			info.notCheckable = false;
 			info.value = {
 				["instance"] = "",
 				["boss"] = "Default"
@@ -74,9 +75,6 @@ function ReadyForTheFight:BossSelect_Initialize(level)
 				self:SetValue(item.value);
 			end;
 			UIDropDownMenu_AddButton(info, level);
-			if (ReadyForTheFight.boss == "") then
-				self.SetValue( info );
-			end
 			for k, v in pairs(ReadyForTheFight.Boss_location) do
 				info.text = k;
 				info.checked = nil;
@@ -135,7 +133,10 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 			RftFDB[instance][boss] = {};
 		end
 		if (RftFDB[instance][boss][spec] == nil) then
-			RftFDB[instance][boss][spec] = { };
+			RftFDB[instance][boss][spec] = {
+				["talent"] = {},
+				["glyph"] = {}
+			};
 		end
 		curConfig = RftFDB[instance][boss][spec];
 	elseif (spec) or (boss == "Default") then
@@ -143,28 +144,31 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 			RftFDB["Default"] = {};
 		end
 		if (RftFDB["Default"][spec] == nil) then
-			RftFDB["Default"][spec] = { };
+			RftFDB["Default"][spec] = {
+				["talent"] = {},
+				["glyph"] = {}
+			};
 		end
 		curConfig = RftFDB["Default"][spec];
 	end
 	
 	for k,v in pairs(ReadyForTheFight.talentGrid) do
-		if ( ( curConfig == nil ) or ( curConfig[k] == nil) ) then
+		if ( ( curConfig["talent"] == nil ) or ( curConfig["talent"][k] == nil) ) then
 			v:SetChecked( false );
 		else
-			v:SetChecked( curConfig[k] );
+			v:SetChecked( curConfig["talent"][k] );
 		end
 	end
 	for k,v in pairs(ReadyForTheFight.glyphGrid) do
-		if ( ( curConfig == nil ) or ( curConfig[k] == nil) ) then
+		if ( ( curConfig["glyph"] == nil ) or ( curConfig["glyph"][k] == nil) ) then
 			v:SetChecked( false );
 		else
-			v:SetChecked( false or (curConfig[k]) );
+			v:SetChecked( false or (curConfig["glyph"][k]) );
 		end
 	end
 end
 
-function ReadyForTheFight:CreateCheckButton(name, parent, radio)
+function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 	local button
 	if radio then
 		button = CreateFrame('CheckButton', parent:GetName() .. name, parent, 'SendMailRadioButtonTemplate')
@@ -191,12 +195,17 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio)
 	else
 		button:SetScript("OnClick", 
 			function (self, button, down)
-				if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) then
-					local checkVal = RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][name] or false;
-					RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][name] = (not checkVal);
+				local checkVal = false;
+				if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+					if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
+						checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
+					end
+					RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
 				elseif (ReadyForTheFight.spec) then
-					local checkVal = RftFDB["Default"][ReadyForTheFight.spec][name] or false;
-					RftFDB["Default"][ReadyForTheFight.spec][name] = (not checkVal);
+					if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
+						checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
+					end
+					RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
 				end
 --				table[field] = not table[field];
 			end
@@ -210,7 +219,15 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio)
 end
 
 function ReadyForTheFight.Options(msg)
-	InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
+	if (msg == "test") then
+		if ReadyForTheFight.alertFrame:IsVisible() then
+			ReadyForTheFight.alertFrame:Hide()
+		else
+			ReadyForTheFight.alertFrame:Show()
+		end
+	else
+		InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
+	end
 end
 
 function ReadyForTheFight:CreateConfig()
@@ -230,16 +247,15 @@ function ReadyForTheFight:CreateConfig()
 		RftFDB["Default"] = {};
 	end
 	
-	local bossSelect = ReadyForTheFight:CreateDropDownMenu("Select a boss", ReadyForTheFight.configPanel, 160, "bosses" );
+	local bossSelect = ReadyForTheFight:CreateDropDownMenu("Default", ReadyForTheFight.configPanel, 160, "bosses" );
 	bossSelect:SetPoint('TOPLEFT', 10, -10);
-	bossSelect:SetValue( { boss = "Default"} );
 
-	local specSelect = ReadyForTheFight:CreateDropDownMenu("Select specialization", ReadyForTheFight.configPanel, 160, "specs" );
+	local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
 	specSelect:SetPoint('TOPLEFT', 210, -10);
-	
+
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);
-		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false);
+		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
 		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -40 -(math.floor((i-1)/3)*25 ) );
 		
 		ReadyForTheFight.talentGrid[name] = talentBtn;
@@ -250,7 +266,7 @@ function ReadyForTheFight:CreateConfig()
 		name, _, _, _, glyphId = GetGlyphInfo( i ) ;
 		if (glyphId) then
 			j = j + 1;
-			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false);
+			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
 			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -210 -(math.floor((j-1)/3)*25 ) );
 
 			ReadyForTheFight.glyphGrid[name] = glyphBtn;
@@ -258,4 +274,53 @@ function ReadyForTheFight:CreateConfig()
 	end
 	
 	ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
+end
+
+function ReadyForTheFight:CreateAlert()
+	local frame = CreateFrame("Button", "RftFFrame", UIParent);
+	frame:SetMovable(true);
+	frame:EnableMouse(true);
+	frame:SetClampedToScreen(true);
+	frame:SetScript("OnMouseDown", function(self, button)
+		if IsShiftKeyDown() and button == "RightButton" and not self.isMoving then
+			self:StartMoving();
+			self.isMoving = true;
+		end
+		if IsControlKeyDown() and button == "RightButton" then
+			self:Hide();
+			self.isMoving = false;
+		end
+	end)
+	frame:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4);
+		GameTooltip:ClearLines();
+		GameTooltip:AddLine("Hello");
+		GameTooltip:AddLine("Shift + Right Click: Drag");
+		GameTooltip:AddLine("Ctrl + Right Click: Hide");
+		GameTooltip:Show();
+	end) 
+	frame:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end)
+	frame:SetScript("OnMouseUp", function(self, button)
+		if button == "RightButton" and self.isMoving then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
+	frame:SetScript("OnHide", function(self)
+		if ( self.isMoving ) then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
+	frame:SetPoint("CENTER"); 
+	frame:SetWidth(64); 
+	frame:SetHeight(64);
+	frame:SetNormalTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+	frame:SetPushedTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+	frame:SetHighlightTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
+	frame:Hide()
+
+	ReadyForTheFight.alertFrame = frame;
 end

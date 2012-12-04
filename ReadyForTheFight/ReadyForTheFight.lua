@@ -244,6 +244,8 @@ function updatezoneinfo ()
 
 			end	
 		end
+		-- frissítés megvolt
+		update_need = false;
 	else -- combat van, ellenorzes elhalasztva a combat utan
 		update_need = true;
 	end
@@ -253,14 +255,17 @@ function events:ZONE_CHANGED(...)
 	dbg("Event: ZONE_CHANGED"); 
 	updatezoneinfo();
 end
+
 function events:ZONE_CHANGED_INDOORS(...)
 	dbg("Event: ZONE_CHANGED_INDOORS"); 
 	updatezoneinfo();
 end
+
 function events:ZONE_CHANGED_NEW_AREA(...)
 	dbg("Event: ZONE_CHANGED_NEW_AREA"); 
 	updatezoneinfo();
 end
+
 function events:ADDON_LOADED(arg1,...)
 	if (arg1==thisaddonname) then
 		dbg("Event: ADDON_LOADED"); 
@@ -269,29 +274,23 @@ function events:ADDON_LOADED(arg1,...)
 			RftFDB = {} -- ures config
 		end
 
-		SlashCmdList["ReadyForTheFight"] = function (msg)
-			if (msg == "test") then
-				if frame:IsVisible() then
-					frame:Hide()
-				else
-					frame:Show()
-				end
-			else
-				ReadyForTheFight.Options()
-			end
-		end
+		SlashCmdList["ReadyForTheFight"] = ReadyForTheFight.Options;
+		
 		SLASH_ReadyForTheFight1 = "/rftf"
 		
 		updatezoneinfo();
+		
+		ReadyForTheFight:CreateAlert();
 	end
 end
+
 function events:PLAYER_REGEN_ENABLED(...)
 	if (update_need) then -- ha combatba volt zona valtas, akkor combat utan frissitunk
 		dbg("Update: PLAYER_REGEN_ENABLED");
-		update_need = false;
 		updatezoneinfo();
 	end
 end
+
 function events:PLAYER_REGEN_DISABLED(...)
 	dbg("Event: PLAYER_REGEN_DISABLED"); 
 end
@@ -321,40 +320,3 @@ frame:RegisterEvent("PLAYER_REGEN_ENABLED");
 frame:RegisterEvent("ADDON_LOADED");
 frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 
-frame:SetMovable(true)
-frame:EnableMouse(true)
-frame:SetClampedToScreen(true)
-frame:SetScript("OnMouseDown", function(self, button)
-  if IsShiftKeyDown() and button == "RightButton" and not self.isMoving then
-   self:StartMoving();
-   self.isMoving = true;
-  end
-end)
-frame:SetScript("OnEnter", function()
-	GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4)
-	GameTooltip:ClearLines()
-	GameTooltip:AddLine("Hello")
-	GameTooltip:Show()
-end) 
-frame:SetScript("OnLeave", function()
-	GameTooltip:Hide() 
-end) 
-frame:SetScript("OnMouseUp", function(self, button)
-  if button == "RightButton" and self.isMoving then
-   self:StopMovingOrSizing();
-   self.isMoving = false;
-  end
-end)
-frame:SetScript("OnHide", function(self)
-  if ( self.isMoving ) then
-   self:StopMovingOrSizing();
-   self.isMoving = false;
-  end
-end)
-frame:SetPoint("CENTER"); 
-frame:SetWidth(64); 
-frame:SetHeight(64);
-frame:SetNormalTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
-frame:SetPushedTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
-frame:SetHighlightTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
-frame:Hide()

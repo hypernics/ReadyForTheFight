@@ -149,8 +149,7 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 		if (RftFDB["Default"][spec] == nil) then
 			RftFDB["Default"][spec] = {
 				["talent"] = {},
-				["glyph"] = {},
-				["UseDefaults"] = {}
+				["glyph"] = {}
 			};
 		end
 		curConfig = RftFDB["Default"][spec];
@@ -168,6 +167,27 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 			v:SetChecked( false );
 		else
 			v:SetChecked( false or (curConfig["glyph"][k]) );
+		end
+	end
+	ReadyForTheFight.useDefaults:SetChecked( curConfig['default'] );
+	ReadyForTheFight:ShowHideGrids( curConfig['default'] );
+end
+
+function ReadyForTheFight:ShowHideGrids( value )
+	local k,v;
+	
+	for k,v in pairs(ReadyForTheFight.talentGrid) do
+		if (value) then
+			v:Hide();
+		else
+			v:Show();
+		end
+	end
+	for k,v in pairs(ReadyForTheFight.glyphGrid) do
+		if (value) then
+			v:Hide();
+		else
+			v:Show();
 		end
 	end
 end
@@ -201,21 +221,32 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 			function (self, button, down)
 				local checkVal = false;
 				if (subkey=="default") then
-					name = "UseDefaults";
-				end
-				
-				if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
-					if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
-						checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
+					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) then
+							checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] == true);
+						end
+						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] = (not checkVal);
+					elseif (ReadyForTheFight.spec) then
+						if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) then
+							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey] == true);
+						end
+						RftFDB["Default"][ReadyForTheFight.spec][subkey] = (not checkVal);
 					end
-					RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
-				elseif (ReadyForTheFight.spec) then
-					if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
-						checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
+					ReadyForTheFight:ShowHideGrids( not(checkVal) );
+				else 
+					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
+							checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
+						end
+						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
+					elseif (ReadyForTheFight.spec) then
+						if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
+							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
+						end
+						RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
 					end
-					RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
-				end
 --				table[field] = not table[field];
+			end
 			end
 		)
 	end

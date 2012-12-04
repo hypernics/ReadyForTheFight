@@ -255,10 +255,13 @@ function ReadyForTheFight:CreateConfig()
 	local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
 	specSelect:SetPoint('TOPLEFT', 210, -10);
 
+	local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "talent");
+	useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
+
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);
 		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
-		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -40 -(math.floor((i-1)/3)*25 ) );
+		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*24 ) );
 		
 		ReadyForTheFight.talentGrid[name] = talentBtn;
 	end
@@ -269,7 +272,7 @@ function ReadyForTheFight:CreateConfig()
 		if (glyphId) then
 			j = j + 1;
 			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
-			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -210 -(math.floor((j-1)/3)*25 ) );
+			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -240 -(math.floor((j-1)/3)*24 ) );
 
 			ReadyForTheFight.glyphGrid[name] = glyphBtn;
 		end

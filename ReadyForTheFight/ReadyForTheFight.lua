@@ -179,11 +179,11 @@ end
 
 function updatezoneinfo ()
 	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenorzes
-		zonename = GetRealZoneText();
+		local zonename = GetRealZoneText();
 		if (zonename ~= nil) then
 			dbg("RealZone: ".. zonename);
 		end
-		subzone = GetSubZoneText();
+		local subzone = GetSubZoneText();
 		if ((subzone == "") or (subzone == nil)) then
 			subzone = zonename;
 		end
@@ -194,10 +194,12 @@ function updatezoneinfo ()
 			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
 				if (not coordupdateregistered) then
 					coordupdateregistered = true;
-					frame:RegisterEvent("WORLD_MAP_UPDATE");
+					-- frame:RegisterEvent("WORLD_MAP_UPDATE");
 				end
 				local bossfound = false;
+				local k,v;
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
+					dbg("Zonecheck:" .. k);
 					if (not bossfound) then
 						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
 							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
@@ -240,7 +242,7 @@ function updatezoneinfo ()
 				end
 			else
 				if (coordupdateregistered) then
-					frame:UnRegisterEvent("WORLD_MAP_UPDATE");
+					-- frame:UnRegisterEvent("WORLD_MAP_UPDATE");
 					coordupdateregistered = false;
 				end
 

@@ -2,7 +2,6 @@ local addonName, addon = ...
 
 ReadyForTheFight = {Locals = {}}
 
-ReadyForTheFight.chatdebugmode = false;
 ReadyForTheFight.debugmode = true;
 
 local L = ReadyForTheFight.Locals
@@ -186,7 +185,6 @@ function updatezoneinfo ()
 			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
 				if (not coordupdateregistered) then
 					coordupdateregistered = true;
-					frame:RegisterEvent("WORLD_MAP_UPDATE");
 				end
 				local bossfound = false;
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
@@ -232,7 +230,6 @@ function updatezoneinfo ()
 				end
 			else
 				if (coordupdateregistered) then
-					frame:UnRegisterEvent("WORLD_MAP_UPDATE");
 					coordupdateregistered = false;
 				end
 
@@ -247,7 +244,7 @@ end
 
 function onUpdate(self, secs)
 	totalseconds = totalseconds + secs;
-    if totalseconds >= 5 then
+    if coordupdateregistered and totalseconds >= 5 then
         ReadyForTheFight:dbg("Timer activated");
         updatezoneinfo();
         totalseconds = 0;

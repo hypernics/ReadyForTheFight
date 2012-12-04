@@ -102,6 +102,7 @@ ReadyForTheFight.alertMsg = {};
 
 local coordupdateregistered = false;
 local bossfound,zonename = nil;
+local totalseconds = 0;
 
 local frame, events = CreateFrame("Button", "RftFFrame", UIParent), {};
 
@@ -245,6 +246,15 @@ function updatezoneinfo ()
 	end
 end
 
+function onUpdate(self, secs)
+	totalseconds = totalseconds + secs;
+    if totalseconds >= 5 then
+        dbg("Timer activated");
+        updatezoneinfo();
+        totalseconds = 0;
+    end
+end
+
 function events:ZONE_CHANGED(...)
 	ReadyForTheFight:dbg("Event: ZONE_CHANGED"); 
 	updatezoneinfo();
@@ -301,6 +311,8 @@ function events:PLAYER_ENTERING_WORLD()
 	ReadyForTheFight:CreateConfig();
 end
 
+frame:SetScript("OnUpdate", onUpdate);
+
 frame:SetScript("OnEvent", function(self, event, ...)
 	events[event](self, ...); -- call one of the functions above
 end);
@@ -313,4 +325,3 @@ frame:RegisterEvent("PLAYER_REGEN_DISABLED");
 frame:RegisterEvent("PLAYER_REGEN_ENABLED");
 frame:RegisterEvent("ADDON_LOADED");
 frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-

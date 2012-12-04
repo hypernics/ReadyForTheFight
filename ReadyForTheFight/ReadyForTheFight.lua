@@ -173,6 +173,21 @@ local function CheckTheBoss()
 	end
 end
 
+function IsBossAlive(zone, boss_id)
+	local result = false;
+	local i, _,name, locked, numEncounters, encounterProgress;
+	
+	for i=1,GetNumSavedInstances() do
+		name, _, _, _, _, _, _, _, _, _, numEncounters, encounterProgress = GetSavedInstanceInfo(i);
+		if (locked) and (name == zone) then
+			result = result or (boss_id > encounterProgress);
+		end
+	end
+	
+	return result;
+
+end
+
 function updatezoneinfo ()
 	if (not InCombatLockdown()) then -- ha nincs combat, akkor mehet az ellenorzes
 		zonename = GetRealZoneText();
@@ -214,7 +229,7 @@ function updatezoneinfo ()
 						end
 						if (bossfound) then
 							if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
-								if (not(select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])))) then
+								if (IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])) then
 									bossfound = nil;
 									ReadyForTheFight:dbg("Boss is not active!");
 									ReadyForTheFight:addtooltip("Boss is not active!")
@@ -224,7 +239,7 @@ function updatezoneinfo ()
 						if (bossfound) then
 							bossalive= true;
 							if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
-								bossalive = not (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"])));
+								bossalive = IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][bossfound]["id"]);
 							end
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");

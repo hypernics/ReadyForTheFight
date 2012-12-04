@@ -217,7 +217,7 @@ function updatezoneinfo ()
 						end
 						if (bossfound) then
 							if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
-								if (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"]))) then
+								if (not(select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])))) then
 									bossfound = nil;
 									dbg("Boss is not active!");
 								end
@@ -226,7 +226,7 @@ function updatezoneinfo ()
 						if (bossfound) then
 							bossalive= true;
 							if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
-								bossalive = select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"]));
+								bossalive = not (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"])));
 							end
 							if (bossalive) then
 								dbg("Boss " .. k .. " is alive!");

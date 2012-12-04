@@ -145,7 +145,7 @@ local function HaveTalent(talent)
 	return false; 
 end
 
-local function CheckTheBoss()
+function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 	if ((zonename ~= nil) and (bossfound ~= nil)) then
 				if (RftFDB[zonename][bossfound]) then
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
@@ -244,7 +244,7 @@ function updatezoneinfo ()
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
 								ReadyForTheFight:addtooltip("Boss " .. k .. " is alive!")
-								CheckTheBoss();
+								ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 								break;
 							else
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");

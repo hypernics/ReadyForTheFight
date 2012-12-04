@@ -126,6 +126,7 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 	local curConfig = {};
 	
 	if (instance) and (instance~="") and (boss) and (spec) and (boss ~= "Default") then
+		ReadyForTheFight.useDefaults:Show();
 		if (RftFDB[instance] == nil) then
 			RftFDB[instance] = {};
 		end
@@ -140,6 +141,7 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 		end
 		curConfig = RftFDB[instance][boss][spec];
 	elseif (spec) or (boss == "Default") then
+		ReadyForTheFight.useDefaults:Hide();
 		if (RftFDB["Default"] == nil) then
 			RftFDB["Default"] = {};
 		end
@@ -196,16 +198,27 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 		button:SetScript("OnClick", 
 			function (self, button, down)
 				local checkVal = false;
-				if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
-					if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
-						checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
+				if (subkey == "default") then
+					-- show / hide talent and glyph grid
+					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+						checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]["UseDefaults"] == true);
+						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]["UseDefaults"] = (not checkVal);
+					elseif (ReadyForTheFight.spec) then
+						checkVal = (RftFDB["Default"][ReadyForTheFight.spec]["UseDefaults"] == true);
+						RftFDB["Default"][ReadyForTheFight.spec]["UseDefaults"] = (not checkVal);
 					end
-					RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
-				elseif (ReadyForTheFight.spec) then
-					if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
-						checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
+				else
+					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
+							checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
+						end
+						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
+					elseif (ReadyForTheFight.spec) then
+						if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
+							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
+						end
+						RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
 					end
-					RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
 				end
 --				table[field] = not table[field];
 			end
@@ -255,10 +268,12 @@ function ReadyForTheFight:CreateConfig()
 	local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
 	specSelect:SetPoint('TOPLEFT', 210, -10);
 
-	local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "talent");
+	local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "default");
 	useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
 	useDefaultBtn:Hide();
 
+	ReadyForTheFight.useDefaults = useDefaultBtn;
+	
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);
 		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");

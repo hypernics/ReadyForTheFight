@@ -174,13 +174,13 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 end
 
 function IsBossAlive(zone, boss_id)
-	local result = false;
+	local result = true;
 	local i, _,name, locked, numEncounters, encounterProgress;
 	
 	for i=1,GetNumSavedInstances() do
-		name, _, _, _, _, _, _, _, _, _, numEncounters, encounterProgress = GetSavedInstanceInfo(i);
+		name, _, _, _, locked, _, _, _, _, _, numEncounters, encounterProgress = GetSavedInstanceInfo(i);
 		if (locked) and (name == zone) then
-			result = result or (boss_id > encounterProgress);
+			result = result and (boss_id > encounterProgress);
 		end
 	end
 	

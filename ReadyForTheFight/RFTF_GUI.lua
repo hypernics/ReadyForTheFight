@@ -225,6 +225,8 @@ function ReadyForTheFight.Options(msg)
 		else
 			ReadyForTheFight.alertFrame:Show()
 		end
+	elseif (msg == "debug") then
+		ReadyForTheFight.debugmode = not ReadyForTheFight.debugmode;
 	else
 		InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
 	end

@@ -1,6 +1,5 @@
-local debugmode = true;
-
 ReadyForTheFight = {Locals = {}}
+ReadyForTheFight.debugmode = true;
 
 local L = ReadyForTheFight.Locals
 
@@ -118,7 +117,7 @@ local frame, events = CreateFrame("Button", "RftFFrame", UIParent), {};
 local update_need = false; -- ha true, akkor valtozott a helyszin es ujraellenorzes szukseges (combat eseten fordulhat elo)
 
 local function dbg (msg)
-	if (debugmode) then
+	if (ReadyForTheFight.debugmode) then
 		print (msg);
 	end
 end
@@ -299,6 +298,7 @@ function events:PLAYER_REGEN_DISABLED(...)
 end
 
 function events:WORLD_MAP_UPDATE(...)
+	dbg("Event: WORLD_MAP_UPDATE"); 
 	updatezoneinfo();
 end
 

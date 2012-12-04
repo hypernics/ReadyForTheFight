@@ -366,10 +366,10 @@ function ReadyForTheFight:CreateAlert()
 		GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4);
 		GameTooltip:ClearLines();
 		local i,v
-		for i,v in ipairs(ReadyForTheFight.alertMsg) do GameTooltip:AddLine(v); end
+		for i,v in ipairs(ReadyForTheFight.alertMsg) do GameTooltip:AddLine("|cffFFFFFF"..v); end
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine("Right Click: Open Config");
-		GameTooltip:AddLine("Shift + Right Click: Drag");
+		GameTooltip:AddLine("|cffFFD100Right Click: |cffFFFFFFOpen Config");
+		GameTooltip:AddLine("|cffFFD100Shift + Right Click: |cffFFFFFFDrag");
 		GameTooltip:Show();
 	end) 
 	frame:SetScript("OnLeave", function()

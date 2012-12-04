@@ -155,8 +155,8 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
 									if (not HaveGlyph(k)) then
-										ReadyForTheFight:dbg("Missing glyph: \124cff00B4FF"..k);
-										ReadyForTheFight:addtooltip("Missing glyph: \124cff00B4FF"..k)
+										ReadyForTheFight:dbg("Missing glyph: |cffFFD100"..k);
+										ReadyForTheFight:addtooltip("Missing glyph: |cffFFD100"..k)
 										vanhiba = true
 									end
 								end
@@ -164,8 +164,8 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							if (RftFDB[zonename][bossfound][spec]["talent"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
 									if (not HaveTalent(k)) then
-										ReadyForTheFight:dbg("Missing talent: \124cff00B4FF"..k);
-										ReadyForTheFight:addtooltip("Missing talent: \124cff00B4FF"..k)
+										ReadyForTheFight:dbg("Missing talent: |cffFFD100"..k);
+										ReadyForTheFight:addtooltip("Missing talent: |cffFFD100"..k)
 										vanhiba = true
 									end									
 								end
@@ -217,16 +217,16 @@ function updatezoneinfo ()
 						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
 							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
 								bossfound = k;
-								ReadyForTheFight:dbg("Boss in this zone: \124cff00B4FF".. bossfound);
-								ReadyForTheFight:addtooltip("Boss in this zone: \124cff00B4FF".. bossfound)
+								ReadyForTheFight:dbg("Boss in this zone: |cffFFD100".. bossfound);
+								ReadyForTheFight:addtooltip("Boss in this zone: |cffFFD100".. bossfound)
 							end
 						else -- nincs subzone
 							if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
 								SetMapToCurrentZone();
 								local posX, posY = GetPlayerMapPosition("player");
 								if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
-									ReadyForTheFight:dbg("Boss in distance: \124cff00B4FF".. k);
-									ReadyForTheFight:addtooltip("Boss in distance: \124cff00B4FF".. k)
+									ReadyForTheFight:dbg("Boss in distance: |cffFFD100".. k);
+									ReadyForTheFight:addtooltip("Boss in distance: |cffFFD100".. k)
 									bossfound = k; 
 								end
 							end

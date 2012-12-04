@@ -1,6 +1,5 @@
 local addonName, addon = ...
 
-
 ReadyForTheFight = {Locals = {}}
 
 ReadyForTheFight.chatdebugmode = false;
@@ -178,10 +177,10 @@ function updatezoneinfo ()
 			subzone = zonename;
 		end
 		if (zonename ~= nil) then
-			dbg("RealZone: ".. zonename);
+			ReadyForTheFight:dbg("RealZone: ".. zonename);
 		end
 		if (subzone ~= nil) then
-			dbg("SubZone: ".. subzone);
+			ReadyForTheFight:dbg("SubZone: ".. subzone);
 		end
 		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zonainfo
 			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
@@ -249,7 +248,7 @@ end
 function onUpdate(self, secs)
 	totalseconds = totalseconds + secs;
     if totalseconds >= 5 then
-        dbg("Timer activated");
+        ReadyForTheFight:dbg("Timer activated");
         updatezoneinfo();
         totalseconds = 0;
     end

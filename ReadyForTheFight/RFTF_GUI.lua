@@ -355,6 +355,7 @@ function ReadyForTheFight:CreateAlert()
 		if button == "RightButton" and self.isMoving then
 			self:StopMovingOrSizing();
 			self.isMoving = false;
+			RftFDB["AlertFrame"]["P"],_,RftFDB["AlertFrame"]["rP"],RftFDB["AlertFrame"]["X"],RftFDB["AlertFrame"]["Y"]=frame:GetPoint()
 		end
 	end)
 	frame:SetScript("OnHide", function(self)
@@ -363,9 +364,9 @@ function ReadyForTheFight:CreateAlert()
 			self.isMoving = false;
 		end
 	end)
-	frame:SetPoint("CENTER"); 
 	frame:SetWidth(64); 
 	frame:SetHeight(64);
+	frame:SetPoint(RftFDB["AlertFrame"]["P"],UIParent,RftFDB["AlertFrame"]["rP"],RftFDB["AlertFrame"]["X"],RftFDB["AlertFrame"]["Y"]); 
 	frame:SetNormalTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
 	frame:SetPushedTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")
 	frame:SetHighlightTexture("Interface\\ICONS\\INV_Glyph_PrimeDeathKnight")

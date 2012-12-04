@@ -154,7 +154,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
 									if (not HaveGlyph(k)) then
-										print("Missing glyph: "..k);
+										ReadyForTheFight:dbg("Missing glyph: "..k);
 										ReadyForTheFight:addtooltip("Missing glyph: "..k)
 									end
 								end
@@ -162,7 +162,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							if (RftFDB[zonename][bossfound][spec]["talent"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
 									if (not HaveTalent(k)) then
-										print("Missing talent: "..k);
+										ReadyForTheFight:dbg("Missing talent: "..k);
 										ReadyForTheFight:addtooltip("Missing talent: "..k)
 									end									
 								end
@@ -243,13 +243,11 @@ function updatezoneinfo ()
 							end
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
-								ReadyForTheFight:addtooltip("Boss " .. k .. " is alive!")
-								ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 								break;
 							else
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");
-								ReadyForTheFight:addtooltip("Boss " .. k .. " killed!")
 							end
+							ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 						end
 					end
 				end
@@ -257,7 +255,6 @@ function updatezoneinfo ()
 				if (coordupdateregistered) then
 					coordupdateregistered = false;
 				end
-
 			end	
 		end
 		-- frissítés megvolt
@@ -297,6 +294,13 @@ function events:ADDON_LOADED(arg1,...)
 		
 		if not RftFDB then 
 			RftFDB = {} -- ures config
+		end
+		if (not RftFDB["AlertFrame"]) then
+			RftFDB["AlertFrame"] = {};
+			RftFDB["AlertFrame"]["X"] = 0;
+			RftFDB["AlertFrame"]["Y"] = 0;
+			RftFDB["AlertFrame"]["rP"] = "CENTER";
+			RftFDB["AlertFrame"]["P"] = "CENTER";
 		end
 
 		SlashCmdList["ReadyForTheFight"] = ReadyForTheFight.Options;

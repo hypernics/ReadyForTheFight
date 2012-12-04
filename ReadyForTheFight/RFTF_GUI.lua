@@ -299,7 +299,9 @@ function ReadyForTheFight:CreateAlert()
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4);
 		GameTooltip:ClearLines();
-		GameTooltip:AddLine("Hello");
+		local i,v
+		for i,v in ipairs(ReadyForTheFight.alertMsg) do GameTooltip:AddLine(v); end
+		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine("Shift + Right Click: Drag");
 		GameTooltip:AddLine("Ctrl + Right Click: Hide");
 		GameTooltip:Show();

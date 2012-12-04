@@ -174,7 +174,72 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 	return(vanhiba)
 end
 
-function IsBossAlive(zone, boss_id)
+function ReadyForTheFight:DoYouNeedBuff()
+	local bStats, bStam, bAP, bAS, bSP, bSH, bCrit, bMas = false 
+	local vanhiba = false
+	for i=1,40 do 
+		local sid=select(11,UnitAura("player",i))
+		if (sid==90363 or sid==117667 or sid==1126 or sid==20217) then
+			bStats=true
+		end
+		if (sid==90364 or sid==469 or sid==6307 or sid==21562) then
+			bStam=true
+		end
+		if (sid==19506 or sid==6673 or sid==57330) then
+			bAP=true
+		end
+		if (sid==128432 or sid==128433 or sid==30809 or sid==113742 or sid==55610) then
+			bAS=true
+		end
+		if (sid==126309 or sid==77747 or sid==109773 or sid==61316 or sid==1459) then
+			bSP=true
+		end
+		if (sid==24907 or sid==51470 or sid==49868 or sid==135678) then
+			bSH=true
+		end
+		if (sid==126309 or sid==24604 or sid==90309 or sid==126373 or sid==1459 or sid==61316 or sid==24932 or sid==116781) then
+			bCrit=true
+		end
+		if (sid==93435 or sid==128997 or sid==116956 or sid==19740) then
+			bMas=true
+		end
+	end
+	if not bStats then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Stats")
+		vanhiba = true
+	end
+	if not bStam then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Stamina")
+		vanhiba = true
+	end
+	if not bAP then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Attack Power")
+		vanhiba = true
+	end
+	if not bAS then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Attack Speed")
+		vanhiba = true
+	end
+	if not bSP then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Spell Power")
+		vanhiba = true
+	end
+	if not bSH then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Spell Haste")
+		vanhiba = true
+	end
+	if not bCrit then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Critical Strike")
+		vanhiba = true
+	end
+	if not bMas then
+		ReadyForTheFight:addtooltip("Missing buff: |cffFFD100Mastery")
+		vanhiba = true
+	end
+	return vanhiba
+end 
+
+function ReadyForTheFight:IsBossAlive(zone, boss_id)
 	local result = true;
 	local i, _,name, locked, numEncounters, encounterProgress;
 	
@@ -204,11 +269,12 @@ function updatezoneinfo ()
 			ReadyForTheFight:dbg("SubZone: ".. subzone);
 		end
 		if ((zonename ~= nil) and (subzone ~= nil)) then -- van zonainfo
-			if (RftFDB[zonename] and ReadyForTheFight.Boss_location[zonename]) then -- a zona szerepel a configban es a boss helyszinek kozott is
+			if (ReadyForTheFight.Boss_location[zonename]) then -- a zona a boss helyszinek kozott is
 				if (not coordupdateregistered) then
 					coordupdateregistered = true;
 				end
-				local bossfound = false;
+				local bossfound = false
+				local vanhiba = false
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
 					if (not bossfound) then
 						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
@@ -230,7 +296,7 @@ function updatezoneinfo ()
 						end
 						if (bossfound) then
 							if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
-								if (IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])) then
+								if (ReadyForTheFight:IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])) then
 									bossfound = false;
 									ReadyForTheFight:dbg("Boss is not active!");
 									ReadyForTheFight:addtooltip("Boss is not active!")
@@ -240,9 +306,8 @@ function updatezoneinfo ()
 						if (bossfound) then
 							bossalive= true;
 							if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
-								bossalive = IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][bossfound]["id"]);
+								bossalive = ReadyForTheFight:IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][bossfound]["id"]);
 							end
-							local vanhiba = false
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
 								vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound)
@@ -251,18 +316,23 @@ function updatezoneinfo ()
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");
 								if ReadyForTheFight.debugmode then vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound) end
 							end
-							if not ReadyForTheFight.debugmode and not vanhiba and ReadyForTheFight.alertFrame:IsVisible() then
-								ReadyForTheFight.alertFrame:Hide()
-							end
-							if vanhiba and not ReadyForTheFight.alertFrame:IsVisible() then
-								ReadyForTheFight.alertFrame:Show()
-							end
 						end
 					end
+				end
+				local kellbuff = ReadyForTheFight:DoYouNeedBuff()
+				vanhiba = vanhiba or kellbuff
+				if not ReadyForTheFight.debugmode and not vanhiba and ReadyForTheFight.alertFrame:IsVisible() then
+					ReadyForTheFight.alertFrame:Hide()
+				end
+				if vanhiba and not ReadyForTheFight.alertFrame:IsVisible() then
+					ReadyForTheFight.alertFrame:Show()
 				end
 			else
 				if (coordupdateregistered) then
 					coordupdateregistered = false;
+				end
+				if not ReadyForTheFight.debugmode and ReadyForTheFight.alertFrame:IsVisible() then
+					ReadyForTheFight.alertFrame:Hide()
 				end
 			end	
 		end

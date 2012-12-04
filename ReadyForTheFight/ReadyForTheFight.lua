@@ -197,43 +197,46 @@ function updatezoneinfo ()
 					coordupdateregistered = true;
 					frame:RegisterEvent("WORLD_MAP_UPDATE");
 				end
-				bossfound = nil;
+				local bossfound = false;
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
-					if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
-						if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
-							bossfound = k;
-							dbg("Boss in this zone: ".. bossfound);
-						end
-					else -- nincs subzone
-						if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
-							SetMapToCurrentZone();
-							local posX, posY = GetPlayerMapPosition("player");
-							if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
-								dbg("Boss in distance: ".. k);
-								bossfound = k; 
+					if (not bossfound) then
+						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
+							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
+								bossfound = k;
+								dbg("Boss in this zone: ".. bossfound);
+							end
+						else -- nincs subzone
+							if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
+								SetMapToCurrentZone();
+								local posX, posY = GetPlayerMapPosition("player");
+								if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
+									dbg("Boss in distance: ".. k);
+									bossfound = k; 
+								end
 							end
 						end
-					end
-					if (bossfound) then
-						if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
-							if (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"]))) then
-								bossfound = nil;
-								dbg("Boss is not active!");
+						if (bossfound) then
+							if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
+								if (select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"]))) then
+									bossfound = nil;
+									dbg("Boss is not active!");
+								end
 							end
 						end
-					end
-					if (bossfound) then
-						bossalive= true;
-						if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
-							bossalive = select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"]));
+						if (bossfound) then
+							bossalive= true;
+							if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
+								bossalive = select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][bossfound]["id"]));
+							end
+							if (bossalive) then
+								dbg("Boss " .. k .. " is alive!");
+	
+								CheckTheBoss();
+								break;
+							else
+								dbg("Boss " .. k .. " killed!");
+							end
 						end
-						if (bossalive) then
-							dbg("Boss is alive!");
-						else
-							-- dbg("Boss killed!");
-						end
-							CheckTheBoss();
-							break;
 					end
 				end
 			else

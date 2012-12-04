@@ -228,12 +228,20 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) then
 							checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] == true);
 						end
-						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] = (not checkVal);
+						if checkVal then
+							RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] = nil;
+						else
+							RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey] = true;
+						end
 					elseif (ReadyForTheFight.spec) then
 						if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) then
 							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey] == true);
 						end
-						RftFDB["Default"][ReadyForTheFight.spec][subkey] = (not checkVal);
+						if checkVal then
+							RftFDB["Default"][ReadyForTheFight.spec][subkey] = nil;
+						else
+							RftFDB["Default"][ReadyForTheFight.spec][subkey] = true;
+						end
 					end
 					ReadyForTheFight:ShowHideGrids( not(checkVal) );
 				else 
@@ -241,21 +249,29 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey]) then
 							checkVal = (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] == true);
 						end
-						RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = (not checkVal);
+						if checkVal then
+							RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = nil;
+						else
+							RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][name] = true;
+						end
 					elseif (ReadyForTheFight.spec) then
 						if (RftFDB["Default"]) and (RftFDB["Default"][ReadyForTheFight.spec]) and (RftFDB["Default"][ReadyForTheFight.spec][subkey]) then
 							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
 						end
-						RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
+						if checkVal then
+							RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = nil;
+						else
+							RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = true;
+						end
 					end
 					if (subkey == "talent") and (not checkVal) then
 						for k,v in pairs( ReadyForTheFight.talentGrid ) do
 							if (v.tier == self.tier) and (k ~= name) and (v:GetChecked()) then
 								v:SetChecked( false );
 								if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
-									RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][k] = false;
+									RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][k] = nil;
 								elseif (ReadyForTheFight.spec) then
-									RftFDB["Default"][ReadyForTheFight.spec][subkey][k] = false;
+									RftFDB["Default"][ReadyForTheFight.spec][subkey][k] = nil;
 								end
 							end
 						end

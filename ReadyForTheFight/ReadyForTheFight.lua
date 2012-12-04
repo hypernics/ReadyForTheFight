@@ -154,7 +154,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 						if (RftFDB[zonename][bossfound][spec]) then
 							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
-									if (not HaveGlyph(k)) then
+									if (v and not HaveGlyph(k)) then
 										ReadyForTheFight:dbg("Missing glyph: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing glyph: |cffFFD100"..k)
 										vanhiba = true
@@ -163,7 +163,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							end
 							if (RftFDB[zonename][bossfound][spec]["talent"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
-									if (not HaveTalent(k)) then
+									if (v and not HaveTalent(k)) then
 										ReadyForTheFight:dbg("Missing talent: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing talent: |cffFFD100"..k)
 										vanhiba = true

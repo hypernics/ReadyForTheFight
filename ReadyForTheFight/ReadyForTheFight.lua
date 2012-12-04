@@ -146,6 +146,7 @@ local function HaveTalent(talent)
 end
 
 function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
+	local vanhiba = false;
 	if ((zonename ~= nil) and (bossfound ~= nil)) then
 				if (RftFDB[zonename][bossfound]) then
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
@@ -154,16 +155,18 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
 									if (not HaveGlyph(k)) then
-										ReadyForTheFight:dbg("Missing glyph: "..k);
-										ReadyForTheFight:addtooltip("Missing glyph: "..k)
+										ReadyForTheFight:dbg("Missing glyph: \124cff00B4FF"..k);
+										ReadyForTheFight:addtooltip("Missing glyph: \124cff00B4FF"..k)
+										vanhiba = true
 									end
 								end
 							end
 							if (RftFDB[zonename][bossfound][spec]["talent"]) then
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
 									if (not HaveTalent(k)) then
-										ReadyForTheFight:dbg("Missing talent: "..k);
-										ReadyForTheFight:addtooltip("Missing talent: "..k)
+										ReadyForTheFight:dbg("Missing talent: \124cff00B4FF"..k);
+										ReadyForTheFight:addtooltip("Missing talent: \124cff00B4FF"..k)
+										vanhiba = true
 									end									
 								end
 							end
@@ -171,6 +174,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 					end				
 				end
 	end
+	return(vanhiba)
 end
 
 function IsBossAlive(zone, boss_id)
@@ -213,16 +217,16 @@ function updatezoneinfo ()
 						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
 							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
 								bossfound = k;
-								ReadyForTheFight:dbg("Boss in this zone: ".. bossfound);
-								ReadyForTheFight:addtooltip("Boss in this zone: ".. bossfound)
+								ReadyForTheFight:dbg("Boss in this zone: \124cff00B4FF".. bossfound);
+								ReadyForTheFight:addtooltip("Boss in this zone: \124cff00B4FF".. bossfound)
 							end
 						else -- nincs subzone
 							if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
 								SetMapToCurrentZone();
 								local posX, posY = GetPlayerMapPosition("player");
 								if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
-									ReadyForTheFight:dbg("Boss in distance: ".. k);
-									ReadyForTheFight:addtooltip("Boss in distance: ".. k)
+									ReadyForTheFight:dbg("Boss in distance: \124cff00B4FF".. k);
+									ReadyForTheFight:addtooltip("Boss in distance: \124cff00B4FF".. k)
 									bossfound = k; 
 								end
 							end
@@ -241,13 +245,21 @@ function updatezoneinfo ()
 							if (ReadyForTheFight.Boss_location[zonename][bossfound]["id"]) then
 								bossalive = IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][bossfound]["id"]);
 							end
+							local vanhiba = false
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
-								ReadyForTheFight:CheckTheBoss(zonename,bossfound)
+								vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 								break;
 							else
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");
-								if ReadyForTheFight.debugmode then ReadyForTheFight:CheckTheBoss(zonename,bossfound) end
+								if ReadyForTheFight.debugmode then vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound) end
+							end
+							if not ReadyForTheFight.debugmode and not vanhiba and ReadyForTheFight.alertFrame:IsVisible() then
+								ReadyForTheFight.alertFrame:Hide()
+							end
+							if vanhiba and not ReadyForTheFight.alertFrame:IsVisible() then
+								
+								ReadyForTheFight.alertFrame:Show()
 							end
 						end
 					end
@@ -308,9 +320,10 @@ function events:ADDON_LOADED(arg1,...)
 		
 		SLASH_ReadyForTheFight1 = "/rftf"
 		
+		ReadyForTheFight:CreateAlert();
+
 		updatezoneinfo();
 		
-		ReadyForTheFight:CreateAlert();
 	end
 end
 

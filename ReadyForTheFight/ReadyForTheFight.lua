@@ -1,9 +1,6 @@
 local addonName, addon = ...
 
 ReadyForTheFight = {Locals = {}}
-
-ReadyForTheFight.debugmode = true;
-
 local L = ReadyForTheFight.Locals
 
 ReadyForTheFight.Boss_location = {
@@ -306,6 +303,7 @@ function events:ADDON_LOADED(arg1,...)
 		if not RftFDB then 
 			RftFDB = {} -- ures config
 		end
+		ReadyForTheFight.debugmode = RftFDB["Debug"]
 		if (not RftFDB["AlertFrame"]) then
 			RftFDB["AlertFrame"] = {};
 			RftFDB["AlertFrame"]["X"] = 0;

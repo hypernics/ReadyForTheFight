@@ -297,6 +297,13 @@ function ReadyForTheFight.Options(msg)
 		end
 	elseif (msg == "debug") then
 		ReadyForTheFight.debugmode = not ReadyForTheFight.debugmode;
+		if ReadyForTheFight.debugmode then 
+			RftFDB["Debug"]=true
+			print ("ReadyForTheFight Debug - |cffFFD100Enabled");
+		else
+			RftFDB["Debug"]=nil
+			print ("ReadyForTheFight Debug - |cffFFD100Disabled");
+		end
 	else
 		InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
 	end

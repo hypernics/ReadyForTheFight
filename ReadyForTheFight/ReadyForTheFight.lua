@@ -4,50 +4,6 @@ ReadyForTheFight = {Locals = {}}
 
 local L = ReadyForTheFight.Locals
 
-RftFDB = {
-	["Heart of Fear"] = {
-		["Imperial Vizier Zor'lok"] = {
-			["Protection"] = {
-				["glyph"] = {
-					["Blessed Life"] = 1,
-					["Glyph of the Alabaster Shield"] = 1,
-				},
-				["talent"] = {
-					["Holy Prism"] = 1,
-					["Light's Hammer"] = 1,
-				},
-			},
-		},
-	},
-	["Terrace of Endless Spring"] = {
-		["Protectors of the Endless"] = {
-			["Protection"] = {
-				["glyph"] = {
-					["Blessed Life"] = 1,
-					["Glyph of the Alabaster Shield"] = 1,
-				},
-				["talent"] = {
-					["Holy Prism"] = 1,
-					["Light's Hammer"] = 1,
-				},
-			},
-		},
-	},
-	["Ide kerul a zona"] = {
-		["Ide kerul a boss neve"] = {
-			["Ide kerul a talent spec neve"] = {
-				["glyph"] = {
-					["Ide kerul a glyph neve"] = 1,
-				},
-				["talent"] = {
-					["Ide kerul a talent neve"] = 1,
-				},
-			},
-		},
-	},
-}
-
-
 ReadyForTheFight.Boss_location = {
 	["Mogu'shan Vaults"] = {
 		["The Stone Guard"] = {
@@ -274,7 +230,7 @@ function updatezoneinfo ()
 						if (bossalive) then
 							dbg("Boss is alive!");
 						else
-							dbg("Boss killed!");
+							-- dbg("Boss killed!");
 						end
 							CheckTheBoss();
 							break;
@@ -309,8 +265,8 @@ function events:ADDON_LOADED(arg1,...)
 	if (arg1==thisaddonname) then
 		dbg("Event: ADDON_LOADED"); 
 		
-		if not RFTFDB then 
-			RFTFDB = {} -- ures config
+		if not RftFDB then 
+			RftFDB = {} -- ures config
 		end
 
 		SlashCmdList["ReadyForTheFight"] = function (msg)
@@ -332,6 +288,7 @@ end
 function events:PLAYER_REGEN_ENABLED(...)
 	if (update_need) then -- ha combatba volt zona valtas, akkor combat utan frissitunk
 		dbg("Update: PLAYER_REGEN_ENABLED");
+		update_need = false;
 		updatezoneinfo();
 	end
 end

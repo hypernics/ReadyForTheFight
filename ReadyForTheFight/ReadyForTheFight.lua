@@ -234,7 +234,7 @@ function updatezoneinfo ()
 						if (bossfound) then
 							if (ReadyForTheFight.Boss_location[zonename][k]["needkilledid"] ~= nil) then  -- kell-e masik bosst leolni ehhez a bosshoz
 								if (IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])) then
-									bossfound = nil;
+									bossfound = false;
 									ReadyForTheFight:dbg("Boss is not active!");
 									ReadyForTheFight:addtooltip("Boss is not active!")
 								end
@@ -258,7 +258,6 @@ function updatezoneinfo ()
 								ReadyForTheFight.alertFrame:Hide()
 							end
 							if vanhiba and not ReadyForTheFight.alertFrame:IsVisible() then
-								
 								ReadyForTheFight.alertFrame:Show()
 							end
 						end
@@ -304,7 +303,6 @@ end
 function events:ADDON_LOADED(arg1,...)
 	if (arg1==addonName) then
 		ReadyForTheFight:dbg("Event: ADDON_LOADED"); 
-		
 		if not RftFDB then 
 			RftFDB = {} -- ures config
 		end
@@ -315,13 +313,9 @@ function events:ADDON_LOADED(arg1,...)
 			RftFDB["AlertFrame"]["rP"] = "CENTER";
 			RftFDB["AlertFrame"]["P"] = "CENTER";
 		end
-
 		SlashCmdList["ReadyForTheFight"] = ReadyForTheFight.Options;
-		
 		SLASH_ReadyForTheFight1 = "/rftf"
-		
 		ReadyForTheFight:CreateAlert();
-
 		updatezoneinfo();
 		
 	end
@@ -335,6 +329,9 @@ function events:PLAYER_REGEN_ENABLED(...)
 end
 
 function events:PLAYER_REGEN_DISABLED(...)
+	if not ReadyForTheFight.debugmode and ReadyForTheFight.alertFrame:IsVisible() then
+		ReadyForTheFight.alertFrame:Hide()
+	end
 	ReadyForTheFight:dbg("Event: PLAYER_REGEN_DISABLED"); 
 end
 

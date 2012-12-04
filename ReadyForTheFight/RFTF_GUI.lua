@@ -287,10 +287,10 @@ function ReadyForTheFight.Options(msg)
 end
 
 function ReadyForTheFight:CreateConfig()
-	local k,k1,v,v1,i;
+	local k,k1,v,v1,i,j,ypos,ymagassag;
 	local name, glyphType;
 	local currentSpec = GetSpecialization();
-
+	
 	ReadyForTheFight.spec = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "";
 	ReadyForTheFight.boss = "Default";
 
@@ -315,26 +315,32 @@ function ReadyForTheFight:CreateConfig()
 
 	ReadyForTheFight.useDefaults = useDefaultBtn;
 	
+	ymagassag = 20;
+	
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);
 		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
-		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*24 ) );
+		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*ymagassag ) );
 		talentBtn.tier = math.floor((i-1)/3) + 1;
 		
 		ReadyForTheFight.talentGrid[name] = talentBtn;
 	end
 
-	j = 0;
-	for i = 1, GetNumGlyphs() do
-		name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
-		if (glyphId) then
-			j = j + 1;
-			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
-			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -240 -(math.floor((j-1)/3)*24 ) );
-			glyphBtn.glyphType = glyphType;
+	ypos = -210
+	for k = 1, 2 do
+		j = 0;
+		for i = 1, GetNumGlyphs() do
+			name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
+			if (glyphId and glyphType==k) then
+				j = j + 1;
+				local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
+				glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), ypos -(math.floor((j-1)/3)*ymagassag ) );
+				glyphBtn.glyphType = glyphType;
 			
-			ReadyForTheFight.glyphGrid[name] = glyphBtn;
+				ReadyForTheFight.glyphGrid[name] = glyphBtn;
+			end
 		end
+		ypos = ypos -(math.floor((j-1)/3)*ymagassag) - ymagassag - 10 
 	end
 	
 	ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
@@ -349,11 +355,12 @@ function ReadyForTheFight:CreateAlert()
 		if IsShiftKeyDown() and button == "RightButton" and not self.isMoving then
 			self:StartMoving();
 			self.isMoving = true;
+		else 
+			if button == "RightButton" then
+				InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
+			end
 		end
-		if IsControlKeyDown() and button == "RightButton" then
-			self:Hide();
-			self.isMoving = false;
-		end
+		
 	end)
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_TOP", 0, 4);
@@ -361,8 +368,8 @@ function ReadyForTheFight:CreateAlert()
 		local i,v
 		for i,v in ipairs(ReadyForTheFight.alertMsg) do GameTooltip:AddLine(v); end
 		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine("Right Click: Open Config");
 		GameTooltip:AddLine("Shift + Right Click: Drag");
-		GameTooltip:AddLine("Ctrl + Right Click: Hide");
 		GameTooltip:Show();
 	end) 
 	frame:SetScript("OnLeave", function()

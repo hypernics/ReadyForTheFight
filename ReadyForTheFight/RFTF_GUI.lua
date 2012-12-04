@@ -136,7 +136,8 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 		if (RftFDB[instance][boss][spec] == nil) then
 			RftFDB[instance][boss][spec] = {
 				["talent"] = {},
-				["glyph"] = {}
+				["glyph"] = {},
+				["UseDefaults"] = {}
 			};
 		end
 		curConfig = RftFDB[instance][boss][spec];
@@ -148,7 +149,8 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 		if (RftFDB["Default"][spec] == nil) then
 			RftFDB["Default"][spec] = {
 				["talent"] = {},
-				["glyph"] = {}
+				["glyph"] = {},
+				["UseDefaults"] = {}
 			};
 		end
 		curConfig = RftFDB["Default"][spec];

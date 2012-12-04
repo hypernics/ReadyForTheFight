@@ -93,7 +93,7 @@ ReadyForTheFight.Boss_location = {
 	}
 }
 ReadyForTheFight.alertMsg = {};
-
+ReadyForTheFight.ConfigPanel = nil;
 
 local coordupdateregistered = false;
 local bossfound,zonename = nil;

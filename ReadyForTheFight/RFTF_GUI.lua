@@ -314,59 +314,61 @@ function ReadyForTheFight:CreateConfig()
 	local name, glyphType;
 	local currentSpec = GetSpecialization();
 	
-	ReadyForTheFight.spec = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "";
-	ReadyForTheFight.boss = "Default";
-
-	ReadyForTheFight.configPanel = CreateFrame( "Frame", "RFTFConfigPanel", UIParent );
-	ReadyForTheFight.configPanel.name = "Ready for the Fight";
-
-	InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
+	if (ReadyForTheFight.configPanel == nil) then
+		ReadyForTheFight.spec = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "";
+		ReadyForTheFight.boss = "Default";
 	
-	if (not RftFDB["Default"]) then
-		RftFDB["Default"] = {};
-	end
+		ReadyForTheFight.configPanel = CreateFrame( "Frame", "RFTFConfigPanel", UIParent );
+		ReadyForTheFight.configPanel.name = "Ready for the Fight";
 	
-	local bossSelect = ReadyForTheFight:CreateDropDownMenu("Default", ReadyForTheFight.configPanel, 160, "bosses" );
-	bossSelect:SetPoint('TOPLEFT', 10, -10);
-
-	local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
-	specSelect:SetPoint('TOPLEFT', 210, -10);
-
-	local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "default");
-	useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
-	useDefaultBtn:Hide();
-
-	ReadyForTheFight.useDefaults = useDefaultBtn;
-	
-	ymagassag = 20;
-	
-	for i=1, GetNumTalents() do
-		name = GetTalentInfo(i);
-		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
-		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*ymagassag ) );
-		talentBtn.tier = math.floor((i-1)/3) + 1;
+		InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
 		
-		ReadyForTheFight.talentGrid[name] = talentBtn;
-	end
-
-	ypos = -210
-	for k = 1, 2 do
-		j = 0;
-		for i = 1, GetNumGlyphs() do
-			name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
-			if (glyphId and glyphType==k) then
-				j = j + 1;
-				local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
-				glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), ypos -(math.floor((j-1)/3)*ymagassag ) );
-				glyphBtn.glyphType = glyphType;
-			
-				ReadyForTheFight.glyphGrid[name] = glyphBtn;
-			end
+		if (not RftFDB["Default"]) then
+			RftFDB["Default"] = {};
 		end
-		ypos = ypos -(math.floor((j-1)/3)*ymagassag) - ymagassag - 10 
-	end
+		
+		local bossSelect = ReadyForTheFight:CreateDropDownMenu("Default", ReadyForTheFight.configPanel, 160, "bosses" );
+		bossSelect:SetPoint('TOPLEFT', 10, -10);
 	
-	ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
+		local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
+		specSelect:SetPoint('TOPLEFT', 210, -10);
+	
+		local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "default");
+		useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
+		useDefaultBtn:Hide();
+	
+		ReadyForTheFight.useDefaults = useDefaultBtn;
+		
+		ymagassag = 20;
+		
+		for i=1, GetNumTalents() do
+			name = GetTalentInfo(i);
+			local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
+			talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*ymagassag ) );
+			talentBtn.tier = math.floor((i-1)/3) + 1;
+			
+			ReadyForTheFight.talentGrid[name] = talentBtn;
+		end
+	
+		ypos = -210
+		for k = 1, 2 do
+			j = 0;
+			for i = 1, GetNumGlyphs() do
+				name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
+				if (glyphId and glyphType==k) then
+					j = j + 1;
+					local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
+					glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), ypos -(math.floor((j-1)/3)*ymagassag ) );
+					glyphBtn.glyphType = glyphType;
+				
+					ReadyForTheFight.glyphGrid[name] = glyphBtn;
+				end
+			end
+			ypos = ypos -(math.floor((j-1)/3)*ymagassag) - ymagassag - 10 
+		end
+		
+		ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
+	end;
 end
 
 function ReadyForTheFight:CreateAlert()

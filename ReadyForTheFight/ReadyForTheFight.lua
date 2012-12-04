@@ -243,11 +243,12 @@ function updatezoneinfo ()
 							end
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
+								ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 								break;
 							else
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");
+								if ReadyForTheFight.debugmode then ReadyForTheFight:CheckTheBoss(zonename,bossfound) end
 							end
-							ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 						end
 					end
 				end

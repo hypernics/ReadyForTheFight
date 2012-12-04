@@ -112,6 +112,10 @@ function ReadyForTheFight:dbg (msg)
 	end
 end
 
+function ReadyForTheFight:addtooltip (msg)
+	table.insert (ReadyForTheFight.alertMsg, msg)
+end
+
 local function HaveGlyph(glyph) 
 	local i, _, enabled, glyphSpellID;
 	
@@ -151,6 +155,7 @@ local function CheckTheBoss()
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
 									if (not HaveGlyph(k)) then
 										print("Missing glyph: "..k);
+										ReadyForTheFight:addtooltip("Missing glyph: "..k)
 									end
 								end
 							end
@@ -158,6 +163,7 @@ local function CheckTheBoss()
 								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
 									if (not HaveTalent(k)) then
 										print("Missing talent: "..k);
+										ReadyForTheFight:addtooltip("Missing talent: "..k)
 									end									
 								end
 							end
@@ -193,6 +199,7 @@ function updatezoneinfo ()
 							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
 								bossfound = k;
 								ReadyForTheFight:dbg("Boss in this zone: ".. bossfound);
+								ReadyForTheFight:addtooltip("Boss in this zone: ".. bossfound)
 							end
 						else -- nincs subzone
 							if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
@@ -200,6 +207,7 @@ function updatezoneinfo ()
 								local posX, posY = GetPlayerMapPosition("player");
 								if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
 									ReadyForTheFight:dbg("Boss in distance: ".. k);
+									ReadyForTheFight:addtooltip("Boss in distance: ".. k)
 									bossfound = k; 
 								end
 							end
@@ -209,6 +217,7 @@ function updatezoneinfo ()
 								if (not(select(3, GetInstanceLockTimeRemainingEncounter(ReadyForTheFight.Boss_location[zonename][k]["needkilledid"])))) then
 									bossfound = nil;
 									ReadyForTheFight:dbg("Boss is not active!");
+									ReadyForTheFight:addtooltip("Boss is not active!")
 								end
 							end
 						end
@@ -219,11 +228,12 @@ function updatezoneinfo ()
 							end
 							if (bossalive) then
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
-	
+								ReadyForTheFight:addtooltip("Boss " .. k .. " is alive!")
 								CheckTheBoss();
 								break;
 							else
 								ReadyForTheFight:dbg("Boss " .. k .. " killed!");
+								ReadyForTheFight:addtooltip("Boss " .. k .. " killed!")
 							end
 						end
 					end

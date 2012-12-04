@@ -257,6 +257,7 @@ function ReadyForTheFight:CreateConfig()
 
 	local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "talent");
 	useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
+	useDefaultBtn:Hide();
 
 	for i=1, GetNumTalents() do
 		name = GetTalentInfo(i);

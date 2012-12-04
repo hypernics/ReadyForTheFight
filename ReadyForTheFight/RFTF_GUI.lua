@@ -203,6 +203,7 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 	frame:SetText(name)
 	frame:SetTextColor(1, 1, 1, 1)
 	frame:SetFontObject(GameFontNormal)
+
 	button:SetScript("OnShow", 
 		function (self) 
 --			self:SetChecked(table[field]) 
@@ -220,6 +221,8 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 		button:SetScript("OnClick", 
 			function (self, button, down)
 				local checkVal = false;
+				local k,v;
+				
 				if (subkey=="default") then
 					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
 						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) then
@@ -244,6 +247,18 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 							checkVal = (RftFDB["Default"][ReadyForTheFight.spec][subkey][name] == true);
 						end
 						RftFDB["Default"][ReadyForTheFight.spec][subkey][name] = (not checkVal);
+					end
+					if (subkey == "talent") and (not checkVal) then
+						for k,v in pairs( ReadyForTheFight.talentGrid ) do
+							if (v.tier == self.tier) and (k ~= name) and (v:GetChecked()) then
+								v:SetChecked( false );
+								if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+									RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][k] = false;
+								elseif (ReadyForTheFight.spec) then
+									RftFDB["Default"][ReadyForTheFight.spec][subkey][k] = false;
+								end
+							end
+						end
 					end
 --				table[field] = not table[field];
 			end
@@ -304,18 +319,20 @@ function ReadyForTheFight:CreateConfig()
 		name = GetTalentInfo(i);
 		local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
 		talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*24 ) );
+		talentBtn.tier = math.floor((i-1)/3) + 1;
 		
 		ReadyForTheFight.talentGrid[name] = talentBtn;
 	end
 
 	j = 0;
 	for i = 1, GetNumGlyphs() do
-		name, _, _, _, glyphId = GetGlyphInfo( i ) ;
+		name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
 		if (glyphId) then
 			j = j + 1;
 			local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
 			glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), -240 -(math.floor((j-1)/3)*24 ) );
-
+			glyphBtn.glyphType = glyphType;
+			
 			ReadyForTheFight.glyphGrid[name] = glyphBtn;
 		end
 	end

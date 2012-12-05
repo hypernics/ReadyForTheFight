@@ -184,7 +184,7 @@ function ReadyForTheFight:ShowHideGrids( value )
 	end
 end
 
-function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
+function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey, tooltiplink)
 	local button
 	if radio then
 		button = CreateFrame('CheckButton', parent:GetName() .. name, parent, 'SendMailRadioButtonTemplate')
@@ -202,6 +202,18 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 --			self.origValue = table[field] or self.origValue
 		end 
 	)
+	if (tooltiplink) then
+		button:SetScript("OnEnter",function(self,motion)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetHyperlink(tooltiplink);
+				GameTooltip:Show();
+			end
+		);
+		button:SetScript("OnLeave",function()
+				GameTooltip:Hide();
+			end
+		);
+	end
 	if radio then
 		button:SetScript("OnClick", 
 			function (self, button, down)
@@ -322,7 +334,7 @@ end
 
 function ReadyForTheFight:CreateConfig()
 	local k,k1,v,v1,i,j,ypos,ymagassag;
-	local name, glyphType;
+	local name, glyphType, glyphID, tooltipLink;
 	local currentSpec = GetSpecialization();
 	
 	if (ReadyForTheFight.configPanel == nil) then
@@ -362,7 +374,7 @@ function ReadyForTheFight:CreateConfig()
 		ypos = -2 -ymagassag;
 		for i=1, GetNumTalents() do
 			name = GetTalentInfo(i);
-			local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "talent");
+			local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "talent", GetTalentLink(i) );
 			talentBtn.tier = math.floor((i-1)/3) + 1;
 			ypos = -2 -(talentBtn.tier * ymagassag);
 			talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), ypos );
@@ -383,10 +395,10 @@ function ReadyForTheFight:CreateConfig()
 			j = 0;
 			for i = 1, GetNumGlyphs() do
 
-				name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
-				if (glyphId and glyphType==k) then
+				name, glyphType, _, _, glyphID, tooltipLink = GetGlyphInfo( i ) ;
+				if (glyphID and glyphType==k) then
 					j = j + 1;
-					local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "glyph");
+					local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "glyph", tooltipLink);
 					glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), ypos -(math.floor((j-1)/3)*ymagassag ) );
 					glyphBtn.glyphType = glyphType;
 				

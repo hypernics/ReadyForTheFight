@@ -204,7 +204,7 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey, tooltip
 	)
 	if (tooltiplink) then
 		button:SetScript("OnEnter",function(self,motion)
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 				GameTooltip:SetHyperlink(tooltiplink);
 				GameTooltip:Show();
 			end

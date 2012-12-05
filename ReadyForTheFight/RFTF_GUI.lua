@@ -83,6 +83,9 @@ function ReadyForTheFight:BossSelect_Initialize(level)
 				info.value = {
 					["instance"] = k
 				}
+				info.func = function(item)
+					ToggleDropDownMenu(nil, nil, self);
+				end;
 				UIDropDownMenu_AddButton(info, level);
 			end
 		else
@@ -137,7 +140,7 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 			RftFDB[instance][boss][spec] = {
 				["talent"] = {},
 				["glyph"] = {},
-				["UseDefaults"] = {}
+				["default"] = true
 			};
 		end
 		curConfig = RftFDB[instance][boss][spec];
@@ -340,6 +343,10 @@ function ReadyForTheFight:CreateConfig()
 		ReadyForTheFight.useDefaults = useDefaultBtn;
 		
 		ymagassag = 20;
+		local text = ReadyForTheFight.configPanel:CreateFontString(nil, 'BACKGROUND');
+		text:SetFontObject('GameFontGreen');
+		text:SetText("Talentek:");
+		text:SetPoint('TOPLEFT', 10, -60);
 		
 		for i=1, GetNumTalents() do
 			name = GetTalentInfo(i);
@@ -352,8 +359,18 @@ function ReadyForTheFight:CreateConfig()
 	
 		ypos = -210
 		for k = 1, 2 do
+			local text = ReadyForTheFight.configPanel:CreateFontString(nil, 'BACKGROUND');
+			text:SetFontObject('GameFontGreen');
+			if (k==1) then
+				text:SetText("Glyph Major:");
+			else
+				text:SetText("Glyph Minor:");
+			end
+			text:SetPoint('TOPLEFT', 10, ypos);
+			ypos = ypos - 10;
 			j = 0;
 			for i = 1, GetNumGlyphs() do
+
 				name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
 				if (glyphId and glyphType==k) then
 					j = j + 1;

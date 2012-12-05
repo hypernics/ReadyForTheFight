@@ -32,6 +32,7 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
 					self.SetValue(self,{instance = ReadyForTheFight.instance, boss = ReadyForTheFight.boss});
 				elseif (self:GetName() == "RFTFConfigPanelspecs") then
 					self.SetValue(self,{specialization = ReadyForTheFight.spec});
+					_G[menu:GetName() .. 'Text']:SetText(ReadyForTheFight.spec);
 				end
 				_G.UIDropDownMenu_Initialize(self, ReadyForTheFight.BossSelect_Initialize);
 			end;

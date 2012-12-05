@@ -268,7 +268,26 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey)
 							end
 						end
 					end
---				table[field] = not table[field];
+					if (subkey == "glyph") and (not checkVal) then
+						local lastGlyphFound = nil;
+						local lastGlyphName = "";
+						local glyphCount = 0;
+						for k,v in pairs( ReadyForTheFight.glyphGrid ) do
+							if (v.glyphType == self.glyphType) and (k ~= name) and (v:GetChecked()) then
+								lastGlyphFound = v;
+								lastGlyphName = k;
+								glyphCount = glyphCount + 1;
+							end
+						end
+						if (glyphCount >= 3) then
+							lastGlyphFound:SetChecked( false );
+							if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
+								RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec][subkey][lastGlyphName] = nil;
+							elseif (ReadyForTheFight.spec) then
+								RftFDB["Default"][ReadyForTheFight.spec][subkey][lastGlyphName] = nil;
+							end
+						end
+					end
 			end
 			end
 		)

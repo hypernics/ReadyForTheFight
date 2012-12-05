@@ -177,21 +177,10 @@ function ReadyForTheFight:LoadChecklist(instance, boss, spec)
 end
 
 function ReadyForTheFight:ShowHideGrids( value )
-	local k,v;
-	
-	for k,v in pairs(ReadyForTheFight.talentGrid) do
-		if (value) then
-			v:Hide();
-		else
-			v:Show();
-		end
-	end
-	for k,v in pairs(ReadyForTheFight.glyphGrid) do
-		if (value) then
-			v:Hide();
-		else
-			v:Show();
-		end
+	if (value) then
+		ReadyForTheFight.gridFrame:Hide();
+	else
+		ReadyForTheFight.gridFrame:Show();
 	end
 end
 
@@ -324,8 +313,6 @@ function ReadyForTheFight:CreateConfig()
 		ReadyForTheFight.configPanel = CreateFrame( "Frame", "RFTFConfigPanel", UIParent );
 		ReadyForTheFight.configPanel.name = "Ready for the Fight";
 	
-		InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
-		
 		if (not RftFDB["Default"]) then
 			RftFDB["Default"] = {};
 		end
@@ -342,24 +329,30 @@ function ReadyForTheFight:CreateConfig()
 	
 		ReadyForTheFight.useDefaults = useDefaultBtn;
 		
+		ReadyForTheFight.gridFrame = CreateFrame( "Frame", "RFTFConfigGridFrame", ReadyForTheFight.configPanel );
+		ReadyForTheFight.gridFrame:SetPoint('TOPLEFT', 0,-58);
+		ReadyForTheFight.gridFrame:SetWidth(400);
+		ReadyForTheFight.gridFrame:SetHeight(400);
+
 		ymagassag = 20;
-		local text = ReadyForTheFight.configPanel:CreateFontString(nil, 'BACKGROUND');
+		local text = ReadyForTheFight.gridFrame:CreateFontString(nil, 'BACKGROUND');
 		text:SetFontObject('GameFontGreen');
 		text:SetText("Talentek:");
-		text:SetPoint('TOPLEFT', 10, -60);
+		text:SetPoint('TOPLEFT', 10, -8);
 		
+		ypos = -2 -ymagassag;
 		for i=1, GetNumTalents() do
 			name = GetTalentInfo(i);
-			local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "talent");
-			talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), -70 -(math.floor((i-1)/3)*ymagassag ) );
+			local talentBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "talent");
 			talentBtn.tier = math.floor((i-1)/3) + 1;
-			
+			ypos = -2 -(talentBtn.tier * ymagassag);
+			talentBtn:SetPoint('TOPLEFT', 10 + (200 * ((i - 1) % 3)), ypos );
 			ReadyForTheFight.talentGrid[name] = talentBtn;
 		end
-	
-		ypos = -210
+
+		ypos = ypos -30;
 		for k = 1, 2 do
-			local text = ReadyForTheFight.configPanel:CreateFontString(nil, 'BACKGROUND');
+			local text = ReadyForTheFight.gridFrame:CreateFontString(nil, 'BACKGROUND');
 			text:SetFontObject('GameFontGreen');
 			if (k==1) then
 				text:SetText("Glyph Major:");
@@ -367,14 +360,14 @@ function ReadyForTheFight:CreateConfig()
 				text:SetText("Glyph Minor:");
 			end
 			text:SetPoint('TOPLEFT', 10, ypos);
-			ypos = ypos - 10;
+			ypos = ypos - 14;
 			j = 0;
 			for i = 1, GetNumGlyphs() do
 
 				name, glyphType, _, _, glyphId = GetGlyphInfo( i ) ;
 				if (glyphId and glyphType==k) then
 					j = j + 1;
-					local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.configPanel, false, "glyph");
+					local glyphBtn = ReadyForTheFight:CreateCheckButton(name, ReadyForTheFight.gridFrame, false, "glyph");
 					glyphBtn:SetPoint('TOPLEFT', 10 + (200 * ((j - 1) % 3)), ypos -(math.floor((j-1)/3)*ymagassag ) );
 					glyphBtn.glyphType = glyphType;
 				
@@ -383,7 +376,8 @@ function ReadyForTheFight:CreateConfig()
 			end
 			ypos = ypos -(math.floor((j-1)/3)*ymagassag) - ymagassag - 10 
 		end
-		
+
+		InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
 		ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
 	end;
 end

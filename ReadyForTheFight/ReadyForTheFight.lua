@@ -158,6 +158,11 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
 						local spec = select(2, GetSpecializationInfo(GetSpecialization(false, false, GetActiveSpecGroup())));
 						if (bosssetup[spec]) then
+							if (bosssetup[spec]["default"] == true) then
+								bosssetup = RftFDB["Default"]
+							end
+						end
+						if (bosssetup[spec]) then
 							if (bosssetup[spec]["glyph"]) then
 								for k,v in pairs(bosssetup[spec]["glyph"]) do
 									if (v and not HaveGlyph(k)) then
@@ -353,7 +358,7 @@ end
 
 function onUpdate(self, secs)
 	totalseconds = totalseconds + secs;
-    if coordupdateregistered and totalseconds >= 5 then
+    if coordupdateregistered and totalseconds >= 3 then
         ReadyForTheFight:dbg("Timer activated");
         updatezoneinfo();
         totalseconds = 0;

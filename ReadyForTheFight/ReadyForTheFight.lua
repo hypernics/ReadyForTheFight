@@ -145,12 +145,21 @@ end
 function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 	local vanhiba = false;
 	if ((zonename ~= nil) and (bossfound ~= nil)) then
-				if (RftFDB[zonename][bossfound]) then
+				local bosssetup = nil
+				if (RftFDB[zonename]) then
+					if (RftFDB[zonename][bossfound]) then
+						bosssetup = RftFDB[zonename][bossfound]
+					else
+						bosssetup = RftFDB["Default"]
+					end
+				else
+					bosssetup = RftFDB["Default"]
+				end
 					if GetSpecialization(false, false, GetActiveSpecGroup() ) then
 						local spec = select(2, GetSpecializationInfo(GetSpecialization(false, false, GetActiveSpecGroup())));
-						if (RftFDB[zonename][bossfound][spec]) then
-							if (RftFDB[zonename][bossfound][spec]["glyph"]) then
-								for k,v in pairs(RftFDB[zonename][bossfound][spec]["glyph"]) do
+						if (bosssetup[spec]) then
+							if (bosssetup[spec]["glyph"]) then
+								for k,v in pairs(bosssetup[spec]["glyph"]) do
 									if (v and not HaveGlyph(k)) then
 										ReadyForTheFight:dbg("Missing glyph: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing glyph: |cffFFD100"..k)
@@ -158,8 +167,8 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 									end
 								end
 							end
-							if (RftFDB[zonename][bossfound][spec]["talent"]) then
-								for k,v in pairs(RftFDB[zonename][bossfound][spec]["talent"]) do
+							if (bosssetup[spec]["talent"]) then
+								for k,v in pairs(bosssetup[spec]["talent"]) do
 									if (v and not HaveTalent(k)) then
 										ReadyForTheFight:dbg("Missing talent: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing talent: |cffFFD100"..k)
@@ -169,7 +178,6 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							end
 						end
 					end				
-				end
 	end
 	return(vanhiba)
 end
@@ -320,7 +328,7 @@ function updatezoneinfo ()
 					end
 				end
 				local kellbuff = ReadyForTheFight:DoYouNeedBuff()
-				vanhiba = vanhiba or kellbuff
+				vanhiba = (vanhiba or kellbuff) and bossfound
 				if not ReadyForTheFight.debugmode and not vanhiba and ReadyForTheFight.alertFrame:IsVisible() then
 					ReadyForTheFight.alertFrame:Hide()
 				end

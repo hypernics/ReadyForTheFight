@@ -27,7 +27,14 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
     end
     menu.itemList = itemList or {};
     menu:SetScript("OnShow", function(self)
-            _G.UIDropDownMenu_Initialize(self, ReadyForTheFight.BossSelect_Initialize);
+			if (ReadyForTheFight.configPanel) then
+				if (self:GetName() == "RFTFConfigPanelbosses") then
+					self.SetValue(self,{instance = ReadyForTheFight.instance, boss = ReadyForTheFight.boss});
+				elseif (self:GetName() == "RFTFConfigPanelspecs") then
+					self.SetValue(self,{specialization = ReadyForTheFight.spec});
+				end
+				_G.UIDropDownMenu_Initialize(self, ReadyForTheFight.BossSelect_Initialize);
+			end;
         end);
     menu.SetValue = function(self, value)
     		if (value) and (value.boss) then
@@ -44,8 +51,7 @@ function ReadyForTheFight:CreateDropDownMenu(text, parent, width, name)
 				ReadyForTheFight.instance = value.instance;
 				
 				ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
-			end;
-			if (value) and (value.specialization) then
+			elseif (value) and (value.specialization) then
 				ReadyForTheFight.spec = value.specialization;
 
 				ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
@@ -341,26 +347,26 @@ function ReadyForTheFight:CreateConfig()
 		ReadyForTheFight.spec = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "";
 		ReadyForTheFight.boss = "Default";
 	
-		ReadyForTheFight.configPanel = CreateFrame( "Frame", "RFTFConfigPanel", UIParent );
-		ReadyForTheFight.configPanel.name = "Ready for the Fight";
+		local configPanel = CreateFrame( "Frame", "RFTFConfigPanel", UIParent );
+		configPanel.name = "Ready for the Fight";
 	
 		if (not RftFDB["Default"]) then
 			RftFDB["Default"] = {};
 		end
 		
-		local bossSelect = ReadyForTheFight:CreateDropDownMenu("Default", ReadyForTheFight.configPanel, 160, "bosses" );
+		local bossSelect = ReadyForTheFight:CreateDropDownMenu("Default", configPanel, 160, "bosses" );
 		bossSelect:SetPoint('TOPLEFT', 10, -10);
 	
-		local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, ReadyForTheFight.configPanel, 160, "specs" );
+		local specSelect = ReadyForTheFight:CreateDropDownMenu(ReadyForTheFight.spec, configPanel, 160, "specs" );
 		specSelect:SetPoint('TOPLEFT', 210, -10);
 	
-		local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", ReadyForTheFight.configPanel, false, "default");
+		local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", configPanel, false, "default");
 		useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
 		useDefaultBtn:Hide();
 	
 		ReadyForTheFight.useDefaults = useDefaultBtn;
 		
-		ReadyForTheFight.gridFrame = CreateFrame( "Frame", "RFTFConfigGridFrame", ReadyForTheFight.configPanel );
+		ReadyForTheFight.gridFrame = CreateFrame( "Frame", "RFTFConfigGridFrame", configPanel );
 		ReadyForTheFight.gridFrame:SetPoint('TOPLEFT', 0,-58);
 		ReadyForTheFight.gridFrame:SetWidth(400);
 		ReadyForTheFight.gridFrame:SetHeight(400);
@@ -408,6 +414,8 @@ function ReadyForTheFight:CreateConfig()
 			ypos = ypos -(math.floor((j-1)/3)*ymagassag) - ymagassag - 10 
 		end
 
+		ReadyForTheFight.configPanel = configPanel;
+		
 		InterfaceOptions_AddCategory(ReadyForTheFight.configPanel);
 		ReadyForTheFight:LoadChecklist(ReadyForTheFight.instance, ReadyForTheFight.boss, ReadyForTheFight.spec);
 	end;
@@ -424,6 +432,11 @@ function ReadyForTheFight:CreateAlert()
 			self.isMoving = true;
 		else 
 			if button == "RightButton" then
+				local currentSpec = GetSpecialization();
+				ReadyForTheFight.spec = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "";
+				ReadyForTheFight.boss = ReadyForTheFight.bossDetected;
+				ReadyForTheFight.instance = ReadyForTheFight.zoneDetected;
+				
 				InterfaceOptionsFrame_OpenToCategory(getglobal("RFTFConfigPanel"));
 			end
 		end

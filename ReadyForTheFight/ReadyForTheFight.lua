@@ -94,6 +94,8 @@ ReadyForTheFight.Boss_location = {
 }
 ReadyForTheFight.alertMsg = {};
 ReadyForTheFight.ConfigPanel = nil;
+ReadyForTheFight.bossDetected = nil;
+ReadyForTheFight.zoneDetected = nil;
 
 local coordupdateregistered = false;
 local bossfound,zonename = nil;
@@ -184,6 +186,8 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 						end
 					end				
 	end
+	ReadyForTheFight.bossDetected = bossfound;
+	ReadyForTheFight.zoneDetected = zonename;
 	return(vanhiba)
 end
 

@@ -192,6 +192,9 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 end
 
 function ReadyForTheFight:DoYouNeedBuff()
+	if (UnitIsDead("player")==1) then
+		return false
+	end
 	local bStats, bStam, bAP, bAS, bSP, bSH, bCrit, bMas = false 
 	local vanhiba = false
 	for i=1,40 do 

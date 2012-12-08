@@ -149,13 +149,15 @@ function ReadyForTheFight:addtooltip (msg)
 end
 
 local function HaveGlyph(glyph) 
-	local i, _, enabled, glyphSpellID;
+	local i, j, _, enabled, glyphID;
 	
 	for i = 1, NUM_GLYPH_SLOTS do
-		enabled, _, _, glyphSpellID = GetGlyphSocketInfo(i);
+		enabled, _, _, _, _, glyphID = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
-			if (glyph == GetSpellInfo( glyphSpellID ) ) then
-				return true;
+			for j = 1, GetNumGlyphs() do
+				if (select(5, GetGlyphInfo( i )) == glyphID) then
+					return true;
+				end
 			end
 		end
 	end

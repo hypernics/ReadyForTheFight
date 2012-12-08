@@ -92,6 +92,39 @@ ReadyForTheFight.Boss_location = {
 		},
 	}
 }
+
+ReadyForTheFight.Wrong_equiped_item = { -- [itemID] = InventorySlotId
+	[32757] = 2, -- Blessed Medallion of Karabor
+	[51558] = 11, -- Runed Loop of the Kirin Tor 
+	[51559] = 11, -- Runed Ring of the Kirin Tor
+	[51560] = 11, -- Runed Band of the Kirin Tor
+	[51557] = 11, -- Runed Signet of the Kirin Tor
+	[48954] = 11, -- Etched Band of the Kirin Tor
+	[48955] = 11, -- Etched Loop of the Kirin Tor
+	[48956] = 11, -- Etched Ring of the Kirin Tor
+	[48957] = 11, -- Etched Signet of the Kirin Tor
+	[45688] = 11, -- Inscribed Band of the Kirin Tor
+	[45689] = 11, -- Inscribed Loop of the Kirin Tor
+	[45690] = 11, -- Inscribed Ring of the Kirin Tor
+	[45691] = 11, -- Inscribed Signet of the Kirin Tor
+	[40585] = 11, -- Signet of the Kirin Tor
+	[40586] = 11, -- Band of the Kirin Tor
+	[44934] = 11, -- Loop of the Kirin Tor
+	[44935] = 11, -- Ring of the Kirin Tor
+	[63352] = 15, -- Shroud of Cooperation
+	[63206] = 15, -- Wrap of Unity
+	[65360] = 15, -- Cloak of Coordination
+	[63353] = 15, -- Shroud of Cooperation
+	[63207] = 15, -- Wrap of Unity
+	[65274] = 15, -- Cloak of Coordination
+	[50287] = 8, -- Boots of the Bay
+	[28585] = 8, -- Ruby Slippers
+	[22630] = 16, -- Atiesh, Greatstaff of the Guardian
+	[22631] = 16, -- Atiesh, Greatstaff of the Guardian
+	[22632] = 16, -- Atiesh, Greatstaff of the Guardian
+	[22589] = 16, -- Atiesh, Greatstaff of the Guardian
+}
+
 ReadyForTheFight.alertMsg = {};
 ReadyForTheFight.ConfigPanel = nil;
 ReadyForTheFight.bossDetected = nil;
@@ -189,6 +222,22 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 	ReadyForTheFight.bossDetected = bossfound;
 	ReadyForTheFight.zoneDetected = zonename;
 	return(vanhiba)
+end
+
+function ReadyForTheFight:DoYouEquipSomethingWrong()
+	if (UnitIsDead("player")==1) then
+		return false
+	end
+	local vanhiba = false
+	local k, v, itemName, itemLink
+	for k,v in pairs(ReadyForTheFight.Wrong_equiped_item) do
+		if ((v==11 or v==12) and GetInventoryItemID("player", 11)==k or GetInventoryItemID("player", 12)==k) or GetInventoryItemID("player", v)==k then
+			vanhiba = true
+			itemName, itemLink = GetItemInfo(k)
+			ReadyForTheFight:addtooltip("Item equipped: "..itemLink)
+		end
+	end
+	return vanhiba
 end
 
 function ReadyForTheFight:DoYouNeedBuff()
@@ -336,7 +385,8 @@ function updatezoneinfo ()
 					end
 				end
 				local kellbuff = ReadyForTheFight:DoYouNeedBuff()
-				vanhiba = (vanhiba or kellbuff) and bossfound
+				local rosszcucc = ReadyForTheFight:DoYouEquipSomethingWrong()
+				vanhiba = (rosszcucc or vanhiba or kellbuff) and bossfound
 				if not ReadyForTheFight.debugmode and not vanhiba and ReadyForTheFight.alertFrame:IsVisible() then
 					ReadyForTheFight.alertFrame:Hide()
 				end

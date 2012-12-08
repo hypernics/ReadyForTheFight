@@ -375,7 +375,7 @@ function ReadyForTheFight:CreateConfig()
 		useDefaultBtn:Hide();
 		ReadyForTheFight.useDefaults = useDefaultBtn;
 
-		local chechBuffBtn = ReadyForTheFight:CreateCheckButton("Check the buffs", configPanel, false, "buff");
+		local chechBuffBtn = ReadyForTheFight:CreateCheckButton("Check missing buffs", configPanel, false, "buff");
 		chechBuffBtn:SetPoint('TOPLEFT', 410, -10);
 		chechBuffBtn:SetChecked( RftFDB["CheckBuffs"] );
 		ReadyForTheFight.chechBuffBtn = chechBuffBtn;

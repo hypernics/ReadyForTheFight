@@ -260,18 +260,14 @@ function ReadyForTheFight:DoYouNeedBuff()
 end 
 
 function ReadyForTheFight:IsBossAlive(zone, boss_id)
-	local result = true;
-	local i, _,name, locked, numEncounters, encounterProgress;
-	
+	local i, _,name, locked, numEncounters, isKilled;
 	for i=1,GetNumSavedInstances() do
-		name, _, _, _, locked, _, _, _, _, _, numEncounters, encounterProgress = GetSavedInstanceInfo(i);
+		name, _, _, _, locked, _, _, _, _, _, numEncounters = GetSavedInstanceInfo(i);
 		if (locked) and (name == zone) then
-			result = result and (boss_id > encounterProgress);
+			return not select(3, GetSavedInstanceEncounterInfo(i,boss_id))
 		end
 	end
-	
-	return result;
-
+	return true
 end
 
 function updatezoneinfo ()

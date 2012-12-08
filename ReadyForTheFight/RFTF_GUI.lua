@@ -233,7 +233,15 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey, tooltip
 			function (self, button, down)
 				local checkVal = false;
 				local k,v;
-				
+				if (subkey=="buff") then
+					if (ReadyForTheFight.CheckBuffs) then
+						ReadyForTheFight.CheckBuffs = false
+						RftFDB["CheckBuffs"] = nil
+					else
+						ReadyForTheFight.CheckBuffs = true
+						RftFDB["CheckBuffs"] = true
+					end
+				else
 				if (subkey=="default") then
 					if (ReadyForTheFight.instance) and (ReadyForTheFight.boss) and (ReadyForTheFight.spec) and (ReadyForTheFight.boss ~= "Default") then
 						if (RftFDB[ReadyForTheFight.instance]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss]) and (RftFDB[ReadyForTheFight.instance][ReadyForTheFight.boss][ReadyForTheFight.spec]) then
@@ -307,7 +315,8 @@ function ReadyForTheFight:CreateCheckButton(name, parent, radio, subkey, tooltip
 							end
 						end
 					end
-			end
+				end
+				end
 			end
 		)
 	end
@@ -364,8 +373,12 @@ function ReadyForTheFight:CreateConfig()
 		local useDefaultBtn = ReadyForTheFight:CreateCheckButton("Use Default settings for this", configPanel, false, "default");
 		useDefaultBtn:SetPoint('TOPLEFT', 10, -40);
 		useDefaultBtn:Hide();
-	
 		ReadyForTheFight.useDefaults = useDefaultBtn;
+
+		local chechBuffBtn = ReadyForTheFight:CreateCheckButton("Check the buffs", configPanel, false, "buff");
+		chechBuffBtn:SetPoint('TOPLEFT', 410, -10);
+		chechBuffBtn:SetChecked( RftFDB["CheckBuffs"] );
+		ReadyForTheFight.chechBuffBtn = chechBuffBtn;
 		
 		ReadyForTheFight.gridFrame = CreateFrame( "Frame", "RFTFConfigGridFrame", configPanel );
 		ReadyForTheFight.gridFrame:SetPoint('TOPLEFT', 0,-58);

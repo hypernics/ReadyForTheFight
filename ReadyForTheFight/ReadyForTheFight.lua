@@ -192,7 +192,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 end
 
 function ReadyForTheFight:DoYouNeedBuff()
-	if (UnitIsDead("player")==1) then
+	if (UnitIsDead("player")==1 or not ReadyForTheFight.CheckBuffs) then
 		return false
 	end
 	local bStats, bStam, bAP, bAS, bSP, bSH, bCrit, bMas = false 
@@ -390,6 +390,7 @@ function events:ADDON_LOADED(arg1,...)
 			RftFDB = {} -- ures config
 		end
 		ReadyForTheFight.debugmode = RftFDB["Debug"]
+		ReadyForTheFight.CheckBuffs = RftFDB["CheckBuffs"]
 		if (not RftFDB["AlertFrame"]) then
 			RftFDB["AlertFrame"] = {};
 			RftFDB["AlertFrame"]["X"] = 0;

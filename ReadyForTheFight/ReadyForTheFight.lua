@@ -343,12 +343,10 @@ function updatezoneinfo ()
 				local bossfound = false
 				local vanhiba = false
 				for k,v in pairs(ReadyForTheFight.Boss_location[zonename]) do
-					if (not bossfound) then
 						if (ReadyForTheFight.Boss_location[zonename][k]["subzone"] ~= nil) then  -- a bossnak van subzone-ja
 							if (subzone == ReadyForTheFight.Boss_location[zonename][k]["subzone"]) then -- megvan a boss neve
 								bossfound = k;
 								ReadyForTheFight:dbg("Boss in this zone: |cffFFD100".. bossfound);
-								ReadyForTheFight:addtooltip("Boss in this zone: |cffFFD100".. bossfound)
 							end
 						else -- nincs subzone
 							if (ReadyForTheFight.Boss_location[zonename][k]["coordX"] ~= nil) then -- a bossnak van koordinataja
@@ -356,7 +354,6 @@ function updatezoneinfo ()
 								local posX, posY = GetPlayerMapPosition("player");
 								if ((math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordX"]-posX) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (math.abs(ReadyForTheFight.Boss_location[zonename][k]["coordY"]-posY) <= ReadyForTheFight.Boss_location[zonename][k]["dist"]) and (select(1, GetCurrentMapDungeonLevel()) == ReadyForTheFight.Boss_location[zonename][k]["maplevel"])) then
 									ReadyForTheFight:dbg("Boss in distance: |cffFFD100".. k);
-									ReadyForTheFight:addtooltip("Boss in distance: |cffFFD100".. k)
 									bossfound = k; 
 								end
 							end
@@ -376,6 +373,7 @@ function updatezoneinfo ()
 								bossalive = ReadyForTheFight:IsBossAlive(zonename,ReadyForTheFight.Boss_location[zonename][bossfound]["id"]);
 							end
 							if (bossalive) then
+								ReadyForTheFight:addtooltip("Boss in this zone: |cffFFD100".. bossfound)
 								ReadyForTheFight:dbg("Boss " .. k .. " is alive!");
 								vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 								break;
@@ -384,7 +382,6 @@ function updatezoneinfo ()
 								if ReadyForTheFight.debugmode then vanhiba = ReadyForTheFight:CheckTheBoss(zonename,bossfound) end
 							end
 						end
-					end
 				end
 				local kellbuff = ReadyForTheFight:DoYouNeedBuff()
 				local rosszcucc = ReadyForTheFight:DoYouEquipSomethingWrong()

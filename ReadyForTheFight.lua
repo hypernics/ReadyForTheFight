@@ -148,13 +148,13 @@ function ReadyForTheFight:addtooltip (msg)
 	table.insert (ReadyForTheFight.alertMsg, msg)
 end
 
-local function HaveGlyph(glyph) 
+function ReadyForTheFight:HaveGlyph(glyph) 
 	local i, j, _, enabled, name, glyphID, glyphID2;
 	for i = 1, NUM_GLYPH_SLOTS do
 		enabled, _, _, _, _, glyphID = GetGlyphSocketInfo(i);
 		if ( enabled ) then 
 			for j = 1, GetNumGlyphs() do
-				name, _, _, _, glyphID2 = GetGlyphInfo(i)
+				name, _, _, _, glyphID2 = GetGlyphInfo(j)
 				if (name == glyph and glyphID2 == glyphID) then
 					return true;
 				end
@@ -164,7 +164,7 @@ local function HaveGlyph(glyph)
 	return false;
 end
 
-local function HaveTalent(talent)
+function ReadyForTheFight:HaveTalent(talent)
 	local i, _, name, selected;
 	
 	local activeTalentGroup = GetActiveSpecGroup() or 1;
@@ -202,7 +202,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 						if (bosssetup[spec]) then
 							if (bosssetup[spec]["glyph"]) then
 								for k,v in pairs(bosssetup[spec]["glyph"]) do
-									if (v and not HaveGlyph(k)) then
+									if (v and not ReadyForTheFight:HaveGlyph(k)) then
 										ReadyForTheFight:dbg("Missing glyph: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing glyph: |cffFFD100"..k)
 										vanhiba = true
@@ -211,7 +211,7 @@ function ReadyForTheFight:CheckTheBoss(zonename,bossfound)
 							end
 							if (bosssetup[spec]["talent"]) then
 								for k,v in pairs(bosssetup[spec]["talent"]) do
-									if (v and not HaveTalent(k)) then
+									if (v and not ReadyForTheFight:HaveTalent(k)) then
 										ReadyForTheFight:dbg("Missing talent: |cffFFD100"..k);
 										ReadyForTheFight:addtooltip("Missing talent: |cffFFD100"..k)
 										vanhiba = true

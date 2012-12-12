@@ -2,7 +2,7 @@
 ## Title: Ready For The Fight
 ## Notes: Glyph, talent check for bosses
 ## Author: hypernics
-## Version: 0.9
+## Version: 1.0
 ## SavedVariables: 
 ## SavedVariablesPerCharacter: RftFDB
 

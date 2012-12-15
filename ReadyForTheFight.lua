@@ -46,7 +46,6 @@ ReadyForTheFight.Boss_location = {
 		["Wind Lord Mel'jarak"] = {
 			["subzone"]	=	"Staging Balcony",
 			["id"] = 4,
-			["needkilledid"] = 3,
 		},
 		["Amber-Shaper Un'sok"] = {
 			["subzone"]	=	"Amber Research Sanctum",
@@ -250,7 +249,7 @@ function ReadyForTheFight:DoYouNeedBuff()
 	local vanhiba = false
 	for i=1,40 do 
 		local sid=select(11,UnitAura("player",i))
-		if (sid==90363 or sid==117667 or sid==1126 or sid==20217) then
+		if (sid==90363 or sid==117667 or sid==1126 or sid==20217 or sid==115921) then
 			bStats=true
 		end
 		if (sid==90364 or sid==469 or sid==6307 or sid==21562) then

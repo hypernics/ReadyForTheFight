@@ -90,7 +90,7 @@ ReadyForTheFight.Boss_location = {
 			["id"] = 4,
 		},
 	},
-	["Terrace of Endless Spring"] = {
+	["Throne of Thunder"] = {
 		["Jin'rokh the Breaker"] = {
 			["subzone"]	=	"Overgrown Statuary",
 			["id"] = 1,

@@ -89,6 +89,60 @@ ReadyForTheFight.Boss_location = {
 			["maplevel"] = 0,
 			["id"] = 4,
 		},
+	},
+	["Terrace of Endless Spring"] = {
+		["Jin'rokh the Breaker"] = {
+			["subzone"]	=	"Overgrown Statuary",
+			["id"] = 1,
+		},
+		["Horridon"] = {
+			["subzone"]	=	"Royal Amphitheater",
+			["id"] = 2,
+		},
+		["Council of Elders"] = {
+			["subzone"]	=	"Lightning Promenade",
+			["id"] = 3,
+		},
+		["Tortos"] = {
+			["subzone"]	=	"Lair of Tortos",
+			["id"] = 4,
+		},
+		["Magaera"] = {
+			["subzone"]	=	"Forgotten Depths",
+			["id"] = 5,
+		},
+		["Ji-Kun"] = {
+			["subzone"]	=	"Roost of Ji-Kun",
+			["id"] = 6,
+		},
+		["Durumu the Forgotten"] = {
+			["subzone"]	=	"Watcher's Sanctum",
+			["id"] = 7,
+		},
+		["Primordius"] = {
+			["subzone"]	=	"Saurok Creation Pit",
+			["id"] = 8,
+		},
+		["Dark Animus"] = {
+			["subzone"]	=	"Halls of Flesh-Shaping",
+			["id"] = 9,
+		},
+		["Iron Qon"] = {
+			["subzone"]	=	"Grand Courtyard",
+			["id"] = 10,
+		},
+		["Twin Consorts"] = {
+			["subzone"]	=	"Celestial Enclave",
+			["id"] = 11,
+		},
+		["Lei Shen"] = {
+			["subzone"]	=	"Pinnacle of Storms",
+			["id"] = 12,
+		},
+		["Ra-den"] = {
+			["subzone"]	=	"Hidden Cell",
+			["id"] = 12,
+		},
 	}
 }
 
@@ -122,6 +176,7 @@ ReadyForTheFight.Wrong_equiped_item = { -- [itemID] = InventorySlotId
 	[22631] = 16, -- Atiesh, Greatstaff of the Guardian
 	[22632] = 16, -- Atiesh, Greatstaff of the Guardian
 	[22589] = 16, -- Atiesh, Greatstaff of the Guardian
+	[92738] = 1,  -- Safari Hat
 }
 
 ReadyForTheFight.alertMsg = {};
